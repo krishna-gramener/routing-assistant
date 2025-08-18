@@ -1,0 +1,8 @@
+prompts/customer-service-prompt.txt
+prompts/technical-support-prompt.txt
+prompts/sales-inquiry-prompt.txt
+prompts/product-information-prompt.txt
+prompts/billing-support-prompt.txt
+prompts/general-information-prompt.txt
+prompts/troubleshooting-prompt.txt
+prompts/policy-questions-prompt.txt

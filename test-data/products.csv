@@ -1,0 +1,11 @@
+product_id,name,price,category,specifications,availability,description
+P001,Wireless Headphones,99.99,Electronics,"Bluetooth 5.0, 30hr battery, Noise cancelling",In Stock,Premium wireless headphones with active noise cancellation
+P002,Smart Watch,249.99,Electronics,"Heart rate monitor, GPS, Waterproof, 5-day battery",In Stock,Advanced fitness tracking smartwatch
+P003,Laptop Stand,39.99,Accessories,"Adjustable height, Aluminum, Compatible with 13-17 inch laptops",In Stock,Ergonomic laptop stand for better posture
+P004,USB-C Cable,19.99,Accessories,"3ft length, USB 3.1, Fast charging, Braided",In Stock,High-quality USB-C charging cable
+P005,Bluetooth Speaker,79.99,Electronics,"360° sound, Waterproof, 12hr battery, Voice assistant",Low Stock,Portable bluetooth speaker with premium sound
+P006,Phone Case,24.99,Accessories,"Drop protection, Wireless charging compatible, Clear design",In Stock,Protective phone case with clear design
+P007,Gaming Mouse,59.99,Electronics,"16000 DPI, RGB lighting, 8 programmable buttons",In Stock,High-performance gaming mouse
+P008,Desk Lamp,89.99,Home,"LED, Adjustable brightness, USB charging port, Touch control",In Stock,Modern LED desk lamp with USB charging
+P009,Power Bank,49.99,Electronics,"20000mAh, Fast charging, 3 USB ports, LED display",In Stock,High-capacity portable power bank
+P010,Webcam,129.99,Electronics,"4K resolution, Auto-focus, Built-in microphone, Privacy cover",Out of Stock,Professional 4K webcam for video calls

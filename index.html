@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing Assistant Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="text-center mb-4">Routing Assistant Chat</h1>
+                
+                <!-- Setup Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Setup</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Files Status</label>
+                                <div class="form-control-plaintext" id="files-status">Loading files...</div>
+                                <small class="text-muted">Auto-loading prompts.txt and file-list.txt</small>
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">LLM Configuration</label>
+                                <button type="button" class="btn btn-outline-primary w-100" id="config-llm-btn">
+                                    Configure LLM Provider
+                                </button>
+                                <small class="text-muted" id="config-status">Click to setup your LLM provider</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Interface -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Chat Interface</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="chat-messages" class="mb-3" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; padding: 15px; background: white; border-radius: 0.375rem;">
+                            <div class="text-muted text-center">Upload your files and start asking questions...</div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="user-question" placeholder="Ask your question..." disabled>
+                            <button class="btn btn-primary" type="button" id="send-btn" disabled>
+                                <span id="send-text">Send</span>
+                                <span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Panel -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#debug-panel">
+                            Debug Panel
+                        </button>
+                    </div>
+                    <div class="collapse" id="debug-panel">
+                        <div class="card-body">
+                            <pre id="debug-output" class="bg-dark text-light p-3 rounded" style="font-size: 12px; max-height: 200px; overflow-y: auto;"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
