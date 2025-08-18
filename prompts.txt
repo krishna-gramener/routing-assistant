@@ -1,8 +1,4 @@
-prompts/customer-service-prompt.txt
-prompts/technical-support-prompt.txt
-prompts/sales-inquiry-prompt.txt
-prompts/product-information-prompt.txt
-prompts/billing-support-prompt.txt
-prompts/general-information-prompt.txt
-prompts/troubleshooting-prompt.txt
-prompts/policy-questions-prompt.txt
+prompts/data-inquiry-prompt.txt: Handle questions about specific MMR data points, rankings, comparisons, and factual maternal health information
+prompts/improvement-strategies-prompt.txt: Provide recommendations, strategies, and interventions for reducing MMR and improving maternal health outcomes  
+prompts/policy-analysis-prompt.txt: Analyze effectiveness of maternal health policies, program performance, and implementation gaps
+prompts/comparative-assessment-prompt.txt: Conduct comparative analysis and benchmarking of MMR performance across districts and blocks

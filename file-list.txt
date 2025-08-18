@@ -1,10 +1,1 @@
-test-data/products.csv - Complete product catalog with names, prices, specifications, and availability
-test-data/customers.json - Customer database with contact information and purchase history
-test-data/faq.md - Frequently asked questions and detailed answers for common inquiries
-test-data/policies.txt - Company policies including returns, privacy, terms of service, and warranties
-test-data/troubleshooting.md - Technical troubleshooting guide for common product issues
-test-data/billing.csv - Billing information, payment methods, and invoice history
-test-data/inventory.json - Real-time inventory levels and stock information
-test-data/support-tickets.csv - Historical support ticket data and resolutions
-test-data/company-info.md - General company information, history, and contact details
-test-data/pricing.json - Detailed pricing structure, discounts, and promotional offers
+test-data/data.csv - Comprehensive MMR and maternal health indicators dataset for Indian districts and development blocks
