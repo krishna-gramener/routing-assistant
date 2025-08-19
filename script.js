@@ -32,9 +32,11 @@ const refreshChat = () => {
 
 const loadFiles = async () => {
     document.getElementById('files-status').textContent = 'Loading...';
+    document.getElementById('files-status').className = 'badge bg-warning';
     state.prompts = await (await fetch('prompts.txt')).text();
     state.fileList = await (await fetch('file-list.txt')).text();
-    document.getElementById('files-status').textContent = '✓ Ready';
+    document.getElementById('files-status').textContent = 'Ready';
+    document.getElementById('files-status').className = 'badge bg-success';
     updateUIState();
 };
 
@@ -56,16 +58,16 @@ const updateConfigStatus = () => {
     const status = document.getElementById('config-status');
     const btn = document.getElementById('config-llm-btn');
     if (state.llmConfig) {
-        status.textContent = '✓ Assistant Ready';
-        btn.textContent = 'Reconfigure';
-        btn.className = 'btn btn-success w-100';
+        status.textContent = 'Analysis engine active';
+        btn.textContent = 'Reconfigure Engine';
+        btn.className = 'btn btn-success btn-sm';
         // Hide setup section once configured
         const setupSection = document.getElementById('setup-section');
         if (setupSection) setupSection.style.display = 'none';
     } else {
-        status.textContent = 'Click to activate the assistant';
-        btn.textContent = 'Initialize Assistant';
-        btn.className = 'btn btn-outline-primary w-100';
+        status.textContent = 'Click to activate analysis capabilities';
+        btn.textContent = 'Initialize Analysis Engine';
+        btn.className = 'btn btn-outline-dark btn-sm';
     }
 };
 
@@ -154,8 +156,8 @@ const processWithLLM = async (question, decision) => {
 const addMessage = (sender, content) => {
     const container = document.getElementById('chat-messages');
     const div = document.createElement('div');
-    div.className = `message mb-3 p-3 rounded ${sender === 'user' ? 'bg-primary text-white ms-5' : 'bg-light me-5'}`;
-    div.innerHTML = `<div class="fw-bold mb-1">${sender === 'user' ? 'Your Question' : 'Analysis'}</div><div class="message-content">${marked.parse(content)}</div>`;
+    div.className = `message mb-3 p-3 rounded-3 ${sender === 'user' ? 'bg-dark text-white ms-4' : 'bg-white border me-4 shadow-sm'}`;
+    div.innerHTML = `<div class="fw-semibold mb-2 small text-uppercase ${sender === 'user' ? 'text-light' : 'text-muted'}">${sender === 'user' ? 'Query' : 'Analysis Response'}</div><div class="message-content">${marked.parse(content)}</div>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div;
