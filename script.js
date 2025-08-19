@@ -31,10 +31,10 @@ const refreshChat = () => {
 };
 
 const loadFiles = async () => {
-    document.getElementById('files-status').textContent = 'Loading files...';
+    document.getElementById('files-status').textContent = 'Loading...';
     state.prompts = await (await fetch('prompts.txt')).text();
     state.fileList = await (await fetch('file-list.txt')).text();
-    document.getElementById('files-status').textContent = '✓ Files loaded';
+    document.getElementById('files-status').textContent = '✓ Ready';
     updateUIState();
 };
 
@@ -56,12 +56,15 @@ const updateConfigStatus = () => {
     const status = document.getElementById('config-status');
     const btn = document.getElementById('config-llm-btn');
     if (state.llmConfig) {
-        status.textContent = '✓ LLM Configured';
+        status.textContent = '✓ Assistant Ready';
         btn.textContent = 'Reconfigure';
         btn.className = 'btn btn-success w-100';
+        // Hide setup section once configured
+        const setupSection = document.getElementById('setup-section');
+        if (setupSection) setupSection.style.display = 'none';
     } else {
-        status.textContent = 'Click to setup LLM';
-        btn.textContent = 'Configure LLM';
+        status.textContent = 'Click to activate the assistant';
+        btn.textContent = 'Initialize Assistant';
         btn.className = 'btn btn-outline-primary w-100';
     }
 };
@@ -90,7 +93,7 @@ const routeQuestion = async (question) => {
             Authorization: `Bearer ${state.llmConfig.apiKey}` 
         },
         body: JSON.stringify({
-            messages: [{ role: 'user', content: `Route this question using prompts and files.\n\nPrompts:\n${state.prompts}\n\nFiles:\n${state.fileList}\n\nQuestion: ${question}` }],
+            messages: [{ role: 'user', content: `Analyze this policy question and select the most appropriate analysis framework and data sources.\n\nAvailable Frameworks:\n${state.prompts}\n\nData Sources:\n${state.fileList}\n\nQuestion: ${question}` }],
             tools,
             tool_choice: { type: "function", function: { name: "route_question" }},
             model: 'gpt-5-mini'
@@ -101,7 +104,8 @@ const routeQuestion = async (question) => {
 };
 
 const processWithLLM = async (question, decision) => {
-    addMessage('assistant', `🔍 **Routing:** ${decision.chosen_prompt} | Files: ${decision.chosen_files.join(', ')}`);
+    // Hide technical routing details from government officials
+    // addMessage('assistant', `🔍 **Routing:** ${decision.chosen_prompt} | Files: ${decision.chosen_files.join(', ')}`);
 
     const promptContent = await (await fetch(decision.chosen_prompt)).text();
     const fileContents = [];
@@ -151,7 +155,7 @@ const addMessage = (sender, content) => {
     const container = document.getElementById('chat-messages');
     const div = document.createElement('div');
     div.className = `message mb-3 p-3 rounded ${sender === 'user' ? 'bg-primary text-white ms-5' : 'bg-light me-5'}`;
-    div.innerHTML = `<div class="fw-bold mb-1">${sender === 'user' ? 'You' : 'Assistant'}</div><div class="message-content">${marked.parse(content)}</div>`;
+    div.innerHTML = `<div class="fw-bold mb-1">${sender === 'user' ? 'Your Question' : 'Analysis'}</div><div class="message-content">${marked.parse(content)}</div>`;
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div;
