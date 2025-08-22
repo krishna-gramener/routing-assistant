@@ -2,3 +2,4 @@ prompts/data-inquiry-prompt.txt: Handle questions about specific MMR data points
 prompts/improvement-strategies-prompt.txt: Provide recommendations, strategies, and interventions for reducing MMR and improving maternal health outcomes  
 prompts/policy-analysis-prompt.txt: Analyze effectiveness of maternal health policies, program performance, and implementation gaps
 prompts/comparative-assessment-prompt.txt: Conduct comparative analysis and benchmarking of MMR performance across districts and blocks
+prompts/system_instructions_comparative_analysis_v2.txt

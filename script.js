@@ -1,8 +1,27 @@
 import { openaiConfig } from "https://cdn.jsdelivr.net/npm/bootstrap-llm-provider@1.2";
 import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2/+esm";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@9/+esm";
+import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/+esm";
 
 const state = { prompts: '', fileList: '', llmConfig: null, messages: [] };
+
+const extractTextFromPdf = async (url) => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/legacy/build/pdf.worker.min.mjs`;
+    const pdf = await pdfjsLib.getDocument({
+        url: url,
+        withCredentials: true
+    }).promise;
+    let fullText = '';
+    
+    for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n';
+    }
+    
+    return fullText;
+};
 
 const configureLLM = async () => {
     state.llmConfig = await openaiConfig({ show: true });
@@ -113,7 +132,12 @@ const processWithLLM = async (question, decision) => {
     const fileContents = [];
     
     for (const file of decision.chosen_files) {
-        const content = await (await fetch(file)).text();
+        let content;
+        if (file.toLowerCase().endsWith('.pdf')) {
+            content = await extractTextFromPdf(file);
+        } else {
+            content = await (await fetch(file)).text();
+        }
         fileContents.push(`--- ${file} ---\n${content}`);
     }
 
