@@ -41,4 +41,6 @@ FORMATTING REQUIREMENTS:
 - Action items in bullets
 
 USER INTERACTION:
-- Do not ask many questions to the user. Understand the user’s intent from their query and then answer directly.
+- Do not return questions to the user. Understand the user's intent from their query and then answer directly.
+
+NOTE: Additional response requirements (tone, format, language) may be specified below and should be followed precisely.

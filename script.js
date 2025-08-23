@@ -3,7 +3,18 @@ import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2/+esm";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@9/+esm";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/+esm";
 
-const state = { prompts: '', fileList: '', llmConfig: null, messages: [] };
+const state = { 
+    prompts: '', 
+    fileList: '', 
+    llmConfig: null, 
+    messages: [],
+    originalPrompts: {},
+    config: {
+        tone: 'Professional',
+        format: 'Summary', 
+        language: 'English'
+    }
+};
 
 const extractTextFromPdf = async (url) => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/legacy/build/pdf.worker.min.mjs`;
@@ -46,7 +57,31 @@ const handleSendMessage = async () => {
 
 const refreshChat = () => {
     state.messages = [];
-    document.getElementById('chat-messages').innerHTML = '';
+    const container = document.getElementById('chat-messages');
+    container.innerHTML = `
+        <div class="card-body d-flex align-items-center justify-content-center">
+            <div class="text-center text-muted">
+                <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
+                <p class="mb-0">Your healthcare analysis results will appear here</p>
+            </div>
+        </div>
+    `;
+    
+    // Update reset button state
+    updateResetButton();
+};
+
+const updateResetButton = () => {
+    const resetBtn = document.getElementById('reset-btn');
+    if (state.messages.length > 0) {
+        resetBtn.classList.remove('btn-outline-secondary');
+        resetBtn.classList.add('btn-outline-danger');
+        resetBtn.title = 'Reset Chat - Clear conversation history';
+    } else {
+        resetBtn.classList.remove('btn-outline-danger');
+        resetBtn.classList.add('btn-outline-secondary');
+        resetBtn.title = 'Reset Chat';
+    }
 };
 
 const loadFiles = async () => {
@@ -54,9 +89,30 @@ const loadFiles = async () => {
     document.getElementById('files-status').className = 'badge bg-warning';
     state.prompts = await (await fetch('prompts.txt')).text();
     state.fileList = await (await fetch('file-list.txt')).text();
+    
+    // Load and store original prompts for modification
+    await loadOriginalPrompts();
+    
     document.getElementById('files-status').textContent = 'Ready';
     document.getElementById('files-status').className = 'badge bg-success';
     updateUIState();
+};
+
+const loadOriginalPrompts = async () => {
+    const promptFiles = [
+        'prompts/comparative-assessment-prompt.txt',
+        'prompts/data-inquiry-prompt.txt', 
+        'prompts/improvement-strategies-prompt.txt',
+        'prompts/policy-analysis-prompt.txt'
+    ];
+    
+    for (const file of promptFiles) {
+        try {
+            state.originalPrompts[file] = await (await fetch(file)).text();
+        } catch (error) {
+            console.warn(`Could not load ${file}:`, error);
+        }
+    }
 };
 
 const checkExistingConfig = async () => {
@@ -80,9 +136,12 @@ const updateConfigStatus = () => {
         status.textContent = 'Analysis engine active';
         btn.textContent = 'Reconfigure Engine';
         btn.className = 'btn btn-success btn-sm';
-        // Hide setup section once configured
-        const setupSection = document.getElementById('setup-section');
-        if (setupSection) setupSection.style.display = 'none';
+        // Auto-collapse settings panel only if it's currently open
+        const settingsPanel = document.getElementById('settingsCollapse');
+        if (settingsPanel && settingsPanel.classList.contains('show')) {
+            const settingsCollapse = bootstrap.Collapse.getInstance(settingsPanel) || new bootstrap.Collapse(settingsPanel);
+            settingsCollapse.hide();
+        }
     } else {
         status.textContent = 'Click to activate analysis capabilities';
         btn.textContent = 'Initialize Analysis Engine';
@@ -128,7 +187,8 @@ const processWithLLM = async (question, decision) => {
     // Hide technical routing details from government officials
     // addMessage('assistant', `🔍 **Routing:** ${decision.chosen_prompt} | Files: ${decision.chosen_files.join(', ')}`);
 
-    const promptContent = await (await fetch(decision.chosen_prompt)).text();
+    const originalPromptContent = state.originalPrompts[decision.chosen_prompt] || await (await fetch(decision.chosen_prompt)).text();
+    const promptContent = addConfigToPrompt(originalPromptContent, state.config);
     const fileContents = [];
     
     for (const file of decision.chosen_files) {
@@ -144,13 +204,30 @@ const processWithLLM = async (question, decision) => {
     const messageDiv = addMessage('assistant', '');
     const contentDiv = messageDiv.querySelector('.message-content');
 
+    // Build conversation context for system message
+    let conversationContext = '';
+    if (state.messages.length > 0) {
+        conversationContext = '\n\n=== PREVIOUS CONVERSATION CONTEXT ===\n';
+        conversationContext += 'Previous questions and answers in this session:\n';
+        
+        // Include last 3 exchanges (6 messages max) for context
+        const recentMessages = state.messages.slice(-6);
+        for (let i = 0; i < recentMessages.length; i += 2) {
+            if (recentMessages[i] && recentMessages[i + 1]) {
+                conversationContext += `\nQ: ${recentMessages[i].content}\n`;
+                conversationContext += `A: ${recentMessages[i + 1].content}\n`;
+            }
+        }
+        conversationContext += '\nUse this context to provide more informed responses and avoid repeating information unless specifically asked to do so.\n';
+    }
+
     // Build context with prompts, files, and conversation history
     const systemMessage = {
         role: 'system',
-        content: `${promptContent}\n\n=== CONTEXT FILES ===\n${fileContents.join('\n\n')}`
+        content: `${promptContent}\n\n=== CONTEXT FILES ===\n${fileContents.join('\n\n')}${conversationContext}`
     };
     
-    const chatMessages = [systemMessage, ...state.messages.slice(-6), { role: 'user', content: question }];
+    const chatMessages = [systemMessage, { role: 'user', content: question }];
     
     const stream = asyncLLM(`${state.llmConfig.baseUrl}/chat/completions`, {
         method: "POST",
@@ -175,14 +252,31 @@ const processWithLLM = async (question, decision) => {
     }
     
     state.messages.push({ role: 'assistant', content: assistantResponse });
+    
+    // Update reset button state
+    updateResetButton();
 };
 
 const addMessage = (sender, content) => {
     const container = document.getElementById('chat-messages');
+    
+    // Clear the empty state if it exists
+    const emptyState = container.querySelector('.card-body');
+    if (emptyState && emptyState.querySelector('.text-center')) {
+        emptyState.innerHTML = '';
+        emptyState.className = 'card-body';
+    }
+    
     const div = document.createElement('div');
-    div.className = `message mb-3 p-3 rounded-3 ${sender === 'user' ? 'bg-dark text-white ms-4' : 'bg-white border me-4 shadow-sm'}`;
-    div.innerHTML = `<div class="fw-semibold mb-2 small text-uppercase ${sender === 'user' ? 'text-light' : 'text-muted'}">${sender === 'user' ? 'Query' : 'Analysis Response'}</div><div class="message-content">${marked.parse(content)}</div>`;
-    container.appendChild(div);
+    if (sender === 'user') {
+        div.className = 'alert alert-primary ms-5 mb-3';
+        div.innerHTML = `<div class="fw-semibold mb-2 small text-uppercase">QUERY</div><div class="message-content">${marked.parse(content)}</div>`;
+    } else {
+        div.className = 'alert alert-light border me-5 mb-3';
+        div.innerHTML = `<div class="fw-semibold mb-2 small text-uppercase text-muted">ANALYSIS</div><div class="message-content">${marked.parse(content)}</div>`;
+    }
+    
+    container.querySelector('.card-body').appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div;
 };
@@ -193,14 +287,100 @@ const showLoading = (show) => {
     document.getElementById('send-btn').disabled = show;
 };
 
+const updateConfig = (type, value) => {
+    state.config[type] = value;
+    updateAllPrompts();
+};
+
+const updateAllPrompts = () => {
+    // Update each prompt file with current configuration
+    for (const [filename, originalContent] of Object.entries(state.originalPrompts)) {
+        const updatedContent = addConfigToPrompt(originalContent, state.config);
+        // This would normally write to the file, but for runtime we'll store in memory
+        state.originalPrompts[filename] = originalContent; // Keep original
+        // For processWithLLM, we'll apply config there
+    }
+};
+
+const addConfigToPrompt = (originalPrompt, config) => {
+    const configInstructions = generateConfigInstructions(config);
+    return `${originalPrompt}\n\n${configInstructions}`;
+};
+
+const generateConfigInstructions = (config) => {
+    let instructions = '\nIMPORTANT RESPONSE REQUIREMENTS:\n';
+    
+    // Tone instructions
+    switch(config.tone) {
+        case 'Professional':
+            instructions += '- Use formal, professional language suitable for government officials\n';
+            instructions += '- Maintain objective, analytical tone throughout\n';
+            break;
+        case 'Casual':
+            instructions += '- Use conversational, approachable language\n';
+            instructions += '- Keep tone friendly but still informative\n';
+            break;
+        case 'Informational':
+            instructions += '- Focus on clear, factual presentation\n';
+            instructions += '- Use neutral, educational tone\n';
+            break;
+        case 'Enthusiastic':
+            instructions += '- Use encouraging, positive language\n';
+            instructions += '- Show enthusiasm for improvements and solutions\n';
+            break;
+    }
+    
+    // Format instructions  
+    switch(config.format) {
+        case 'Summary':
+            instructions += '- Provide concise summary format\n';
+            instructions += '- Focus on key points and main insights\n';
+            break;
+        case 'Report':
+            instructions += '- Use detailed report format with clear sections\n';
+            instructions += '- Include comprehensive analysis and background\n';
+            break;
+        case 'Bullet Points':
+            instructions += '- Present information in clear bullet point format\n';
+            instructions += '- Use concise, actionable bullet points\n';
+            break;
+    }
+    
+    // Language instructions
+    if (config.language !== 'English') {
+        instructions += `- Respond COMPLETELY in ${config.language} language only\n`;
+        instructions += `- Do NOT mix English words or phrases with ${config.language}\n`;
+        instructions += `- Use proper ${config.language} terminology for all technical terms\n`;
+        instructions += '- Maintain professional vocabulary appropriate for government context\n';
+        if (config.language === 'Hindi') {
+            instructions += '- Use Devanagari script properly\n';
+            instructions += '- Translate all English technical terms to appropriate Hindi equivalents\n';
+        }
+    }
+    
+    return instructions;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('config-llm-btn').addEventListener('click', configureLLM);
     document.getElementById('send-btn').addEventListener('click', handleSendMessage);
     document.getElementById('user-question').addEventListener('keypress', e => e.key === 'Enter' && handleSendMessage());
     
-    // Add refresh button if it exists
-    const refreshBtn = document.getElementById('refresh-btn');
-    if (refreshBtn) refreshBtn.addEventListener('click', refreshChat);
+    // Add reset button event listener
+    document.getElementById('reset-btn').addEventListener('click', refreshChat);
+    
+    // Add dropdown event listeners
+    document.getElementById('tone-select').addEventListener('change', (e) => {
+        updateConfig('tone', e.target.value);
+    });
+    
+    document.getElementById('format-select').addEventListener('change', (e) => {
+        updateConfig('format', e.target.value);
+    });
+    
+    document.getElementById('language-select').addEventListener('change', (e) => {
+        updateConfig('language', e.target.value);
+    });
     
     loadFiles();
     checkExistingConfig();
