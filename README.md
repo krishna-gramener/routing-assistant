@@ -1,97 +1,104 @@
-# Routing Assistant Chat App
+# Healthcare Data Insights Platform
 
-A smart chat application that automatically routes your questions to the right prompts and files for accurate answers.
+A conversational AI platform for analyzing healthcare data and generating insights for policy decision-making.
 
-## What Does This App Do?
+## What Does This Platform Do?
 
-This app helps you get better answers by:
-1. **Analyzing your question** to understand what you need
-2. **Selecting the best prompt** from your collection of prompts
-3. **Finding relevant files** that contain the information you need
-4. **Combining everything** to give you a comprehensive answer
+This platform helps government officials and healthcare professionals by:
+1. **Analyzing healthcare questions** to understand data requirements
+2. **Selecting appropriate analysis frameworks** from specialized prompts
+3. **Accessing relevant healthcare datasets** including maternal mortality rates, anemia prevalence, and more
+4. **Generating comprehensive insights** with proper formatting and language support
+
+## Features
+
+- **Multi-language Support**: English, Hindi, Marathi, Telugu
+- **Multiple Output Formats**: Summary, Detailed Report, Bullet Points
+- **Healthcare Data Analysis**: Maternal Mortality Rates, Anemia Prevalence, Iron-Folic Acid consumption
+- **Bootstrap-styled Tables**: Beautiful, responsive table formatting for data presentation
+- **Conversational Context**: Maintains conversation history for informed responses
 
 ## How to Use
 
-### Step 1: Get Your Files Ready
-You'll need two text files:
+### Step 1: Initialize the Platform
 
-**Prompts File** - A list of available prompts (one per line or clearly separated)
-```
-customer-service-prompt.txt
-technical-support-prompt.txt
-sales-inquiry-prompt.txt
-```
+1. **Open the platform** by opening `index.html` in your browser
+2. **Configure the Analysis Engine** by clicking "Initialize Analysis Engine"
+   - Enter your OpenAI-compatible API endpoint
+   - Provide your API key
+   - Configuration is automatically saved for future use
 
-**File List** - A description of your available files (format: filename - description)
-```
-products.csv - Complete product catalog with prices and specifications
-faq.md - Frequently asked questions and answers
-policies.txt - Company policies and procedures
-```
+### Step 2: Set Response Preferences
 
-### Step 2: Set Up the App
+Configure your preferred settings:
+- **Format**: Choose between Summary, Report, or Bullet Points
+- **Language**: Select from English, Hindi, Marathi, or Telugu
 
-1. **Open the app** by double-clicking `index.html`
-2. **Upload your prompts file** using the "Prompts File" button
-3. **Upload your file list** using the "File List" button  
-4. **Configure your LLM provider** by clicking "Configure LLM Provider"
-   - Enter any OpenAI-compatible API endpoint (text input supports any proxy)
-   - Common examples: OpenAI, OpenRouter, local Ollama, Groq, or your own proxy
-   - Enter your API key for the chosen provider
-   - The configuration is saved automatically for future use
+### Step 3: Ask Questions
 
-### Step 3: Start Chatting
+Use the sample questions or type your own:
+- "Rank the top 5 and bottom 5 districts by MMR"
+- "Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi"
+- "Rank the top and bottom districts by Iron-Folic Acid consumption"
+- "What are the key strategies to improve maternal health in rural areas?"
 
-1. Type your question in the text box
-2. Click "Send" or press Enter
-3. The app will:
-   - Show you which prompt and files it selected
-   - Explain why it made those choices
-   - Give you a detailed answer
+## Sample Questions
 
-## Example Questions You Can Ask
+The platform includes pre-configured sample questions:
+- **Data Ranking**: Find top and bottom performing districts
+- **Comparative Analysis**: Compare health metrics across districts
+- **Strategic Insights**: Get recommendations for healthcare improvements
 
-- "What's the return policy for damaged items?"
-- "How do I troubleshoot login issues?"
-- "What are the specifications for product XYZ?"
-- "What's the process for handling customer complaints?"
+## Data Sources
 
-## Tips for Better Results
+The platform analyzes various healthcare datasets including:
+- Maternal Mortality Rate (MMR) data
+- Anemia prevalence statistics
+- Iron-Folic Acid consumption patterns
+- District-wise health indicators
 
-- **Be specific** in your questions
-- **Use clear filenames** and descriptions in your file list
-- **Keep prompts focused** on specific topics or use cases
-- **Update your files regularly** to keep information current
+## Technical Features
 
-## Troubleshooting
-
-**Nothing happens when I click Send**
-- Make sure all three components are configured: prompts file, file list, and LLM provider
-
-**I get an error about the API key**
-- Check that your API key is valid for the selected provider
-- Make sure you have credits available in your account
-- Try reconfiguring your LLM provider
-
-**The app picks wrong files**
-- Make your file descriptions more specific
-- Include keywords that match the types of questions you ask
-
-**Responses are too slow**
-- This is normal for the first response as the app analyzes your files
-- Subsequent responses should be faster
+- **Markdown Rendering**: Rich text formatting with Bootstrap-styled tables
+- **File Processing**: Supports PDF and Excel file analysis
+- **Streaming Responses**: Real-time response generation
+- **Responsive Design**: Works on desktop and mobile devices
 
 ## Privacy & Security
 
-- Your LLM configuration is stored securely in your browser's local storage
-- Files are processed locally in your browser
-- Only your questions and selected content are sent to your chosen LLM provider
-- No data is permanently stored on any servers
+- LLM configuration stored securely in browser local storage
+- Files processed locally in your browser
+- Only questions and selected content sent to your chosen LLM provider
+- No data permanently stored on external servers
+
+## Troubleshooting
+
+**Platform doesn't respond**
+- Ensure the Analysis Engine is properly configured
+- Check your internet connection
+- Verify your API key is valid and has sufficient credits
+
+**Tables appear as plain text**
+- Refresh the browser page to load the latest styling updates
+- Ensure Bootstrap CSS is loading properly
+
+**Responses are slow**
+- First response may take longer as the system analyzes data files
+- Subsequent responses should be faster with conversation context
 
 ## Need Help?
 
-If you're having trouble:
-1. Check the Debug Panel (click to expand it) for error messages
-2. Make sure your internet connection is working
-3. Verify your LLM provider configuration is correct
-4. Try reconfiguring your LLM provider or refreshing the page
+If you encounter issues:
+1. Check the browser console for error messages
+2. Verify your LLM provider configuration
+3. Try refreshing the page and reconfiguring the Analysis Engine
+4. Ensure all data files are accessible
+
+## Platform Requirements
+
+- Modern web browser with JavaScript enabled
+- Internet connection for LLM API access
+- Valid API key for OpenAI-compatible provider
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
