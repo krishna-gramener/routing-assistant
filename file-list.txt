@@ -1,4 +1,2 @@
 test-data/actual_data.csv - Comprehensive MMR and maternal health indicators dataset for Uttar Pradesh districts and development blocks
-test-data/estimates and correlates of district-level maternal mortality.pdf - 
-test-data/Jhansi Case Study.pdf - 
-test-data/Utilization of Healthcare Facilities.pdf - 
+test-data/Question Buckets.xlsx - Categorized maternal health indicators organized by pregnancy stages (Before, During, At delivery, Post-delivery) with 10 key MMR-related metrics including ANC visits, institutional delivery rates, anemia screening, and maternal death reporting

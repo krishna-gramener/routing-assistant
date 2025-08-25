@@ -2,6 +2,14 @@ import { openaiConfig } from "https://cdn.jsdelivr.net/npm/bootstrap-llm-provide
 import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2/+esm";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@9/+esm";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/+esm";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
+
+// Configure marked to handle tables and other extensions
+marked.use({
+    gfm: true, // GitHub Flavored Markdown
+    breaks: true,
+    tables: true
+});
 
 const state = { 
     prompts: '', 
@@ -32,6 +40,43 @@ const extractTextFromPdf = async (url) => {
     }
     
     return fullText;
+};
+
+const extractTextFromExcel = async (url) => {
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    
+    let fullText = '';
+    
+    // Process each sheet
+    for (const sheetName of workbook.SheetNames) {
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        if (jsonData.length > 0) {
+            fullText += `\n=== SHEET: ${sheetName} ===\n`;
+            
+            // Get headers from first row
+            const headers = jsonData[0] || [];
+            fullText += `Headers: ${headers.join(' | ')}\n\n`;
+            
+            // Process data rows
+            for (let i = 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                if (row && row.some(cell => cell !== null && cell !== undefined && cell !== '')) {
+                    const rowText = row.map((cell, index) => {
+                        const header = headers[index] || `Column${index + 1}`;
+                        return `${header}: ${cell || ''}`;
+                    }).join(' | ');
+                    fullText += `Row ${i}: ${rowText}\n`;
+                }
+            }
+            fullText += '\n';
+        }
+    }
+    
+    return fullText.trim();
 };
 
 const configureLLM = async () => {
@@ -99,18 +144,44 @@ const loadFiles = async () => {
 };
 
 const loadOriginalPrompts = async () => {
-    const promptFiles = [
-        'prompts/comparative-assessment-prompt.txt',
-        'prompts/data-inquiry-prompt.txt', 
-        'prompts/improvement-strategies-prompt.txt',
-        'prompts/policy-analysis-prompt.txt'
-    ];
-    
-    for (const file of promptFiles) {
-        try {
-            state.originalPrompts[file] = await (await fetch(file)).text();
-        } catch (error) {
-            console.warn(`Could not load ${file}:`, error);
+    try {
+        // Get the list of files in the prompts directory
+        const response = await fetch('prompts/');
+        const text = await response.text();
+        
+        // Parse the directory listing to extract filenames
+        const fileMatches = text.match(/href="([^"]+\.txt)"/g);
+        if (fileMatches) {
+            const promptFiles = fileMatches.map(match => {
+                const filename = match.match(/href="([^"]+)"/)[1];
+                return `prompts/${filename}`;
+            });
+            
+            // Load each prompt file
+            for (const file of promptFiles) {
+                try {
+                    state.originalPrompts[file] = await (await fetch(file)).text();
+                    console.log(`Loaded prompt: ${file}`);
+                } catch (error) {
+                    console.warn(`Could not load ${file}:`, error);
+                }
+            }
+        }
+    } catch (error) {
+        console.warn('Could not fetch prompts directory listing:', error);
+        // Fallback to known files if directory listing fails
+        const fallbackFiles = [
+            'prompts/system_prompt_mmr.txt',
+            'prompts/system_prompt_mmr_data_only.txt'
+        ];
+        
+        for (const file of fallbackFiles) {
+            try {
+                state.originalPrompts[file] = await (await fetch(file)).text();
+                console.log(`Loaded fallback prompt: ${file}`);
+            } catch (error) {
+                console.warn(`Could not load fallback ${file}:`, error);
+            }
         }
     }
 };
@@ -176,7 +247,7 @@ const routeQuestion = async (question) => {
             messages: [{ role: 'user', content: `Analyze this policy question and select the most appropriate analysis framework and data sources.\n\nAvailable Frameworks:\n${state.prompts}\n\nData Sources:\n${state.fileList}\n\nQuestion: ${question}` }],
             tools,
             tool_choice: { type: "function", function: { name: "route_question" }},
-            model: 'gpt-5-mini'
+            model: 'gpt-4.1-mini'
         })
     });
 
@@ -195,6 +266,8 @@ const processWithLLM = async (question, decision) => {
         let content;
         if (file.toLowerCase().endsWith('.pdf')) {
             content = await extractTextFromPdf(file);
+        } else if (file.toLowerCase().endsWith('.xlsx')) {
+            content = await extractTextFromExcel(file);
         } else {
             content = await (await fetch(file)).text();
         }
@@ -237,7 +310,7 @@ const processWithLLM = async (question, decision) => {
         },
         body: JSON.stringify({
             messages: chatMessages,
-            model: 'gpt-5-mini',
+            model: 'gpt-4.1-mini',
             stream: true
         })
     });
