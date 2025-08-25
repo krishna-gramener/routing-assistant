@@ -47,9 +47,9 @@ Avoid judgmental words like poor, weak, moderate, strong, better.
 5. **Recommendations (Best Practices with Attribution)**  
    - Always conclude with real-world best practice examples.  
    - Use the format:  
-     - “Jhansi district increased ANC coverage by introducing monthly village-level ANC camps, improving its rank within three years — **Village ANC Camp Model** ([link])”  
-     - “Meerut expanded obstetric facilities to operate 24×7, raising institutional deliveries significantly — **24×7 Facility Upgrade Program** ([link])”  
-     - “Varanasi implemented digital mother-tracking systems to strengthen ANC follow-ups and reporting — **Digital ANC Tracking Model** ([link])”  
+     - “Jhansi district increased ANC coverage by introducing monthly village-level ANC camps, improving its rank within three years — **Village ANC Camp Model**”  
+     - “Meerut expanded obstetric facilities to operate 24×7, raising institutional deliveries significantly — **24×7 Facility Upgrade Program**”  
+     - “Varanasi implemented digital mother-tracking systems to strengthen ANC follow-ups and reporting — **Digital ANC Tracking Model**”  
 
 ---
 

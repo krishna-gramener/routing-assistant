@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Chat</title>
+    <title>Data Insights Platform</title>
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/NITI_Aayog_logo.svg/1280px-NITI_Aayog_logo.svg.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
-    <nav class="navbar bg-white border-bottom">
+    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
         <div class="container">
-            <span class="navbar-brand mb-0 h5 fw-bold text-dark">Data Chat</span>
-            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
+            <div class="d-flex align-items-center">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/NITI_Aayog_logo.svg/1280px-NITI_Aayog_logo.svg.png" 
+                     alt="NITI Aayog Logo" height="40" class="me-3">
+                <span class="navbar-brand mb-0 h5 fw-bold text-white">Conversational Data Insights Platform</span>
+            </div>
+            <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
                 <i class="bi bi-gear me-1"></i>Settings
             </button>
         </div>
@@ -44,27 +48,26 @@
     <div class="container py-5">
         <!-- Title and Description -->
         <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold text-dark mb-3">Data Chat</h1>
+            <h1 class="display-5 fw-bold text-dark mb-3">Data Insights Platform</h1>
             <p class="lead text-muted">
-                Chat with your data. Analyze policies, datasets, and get insights from comprehensive 
-                documents and spreadsheets.
+                The system highlights how data can be queried and compared in dialogue to produce decision-ready insights.
             </p>
         </div>
 
-        <!-- Two Column Layout: Sample Questions and Configuration -->
+            <!-- Two Column Layout: Sample Questions and Configuration -->
         <div class="row mb-4">
             <!-- Left Column: Sample Questions -->
             <div class="col-md-6">
                 <h6 class="fw-semibold mb-3 text-dark">Sample Questions</h6>
                 <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        What is the MMR for Uttar Pradesh compared to national average?
+                        Rank the top 5 and bottom 5 districts by MMR
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        Which districts have the highest institutional delivery rates?
+                        Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        How effective is the Janani Suraksha Yojana program?
+                        Rank the top and bottom districts by Iron-Folic Acid consumption
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
                         What are the key strategies to improve maternal health in rural areas?
@@ -101,7 +104,7 @@
         <div class="mb-4">
             <div class="input-group input-group-lg">
                 <input type="text" class="form-control rounded-start-3" id="user-question" 
-                       placeholder="Ask about healthcare policies, data analysis, or recommendations..." disabled>
+                       placeholder="Ask Your Question Here" disabled>
                 <button class="btn btn-primary" id="send-btn" disabled>
                     <span id="send-text">Search</span>
                     <span id="loading-spinner" class="spinner-border spinner-border-sm d-none ms-2"></span>
@@ -128,7 +131,22 @@
     <script>
         function fillQuestion(button) {
             const question = button.textContent.trim();
-            document.getElementById('user-question').value = question;
+            const userQuestionInput = document.getElementById('user-question');
+            const sendButton = document.getElementById('send-btn');
+            
+            // Fill the input field
+            userQuestionInput.value = question;
+            
+            // Enable the input and send button if they're disabled
+            if (userQuestionInput.disabled) {
+                userQuestionInput.disabled = false;
+            }
+            if (sendButton.disabled) {
+                sendButton.disabled = false;
+            }
+            
+            // Trigger the send button click to auto-submit
+            sendButton.click();
         }
     </script>
 </body>
