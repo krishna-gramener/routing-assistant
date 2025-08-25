@@ -8,7 +8,21 @@ import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 marked.use({
     gfm: true, // GitHub Flavored Markdown
     breaks: true,
-    tables: true
+    tables: true,
+    renderer: {
+        table(header, body) {
+            return `<div class="table-responsive my-3">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="table-dark">
+                        ${header}
+                    </thead>
+                    <tbody>
+                        ${body}
+                    </tbody>
+                </table>
+            </div>`;
+        }
+    }
 });
 
 const state = { 
