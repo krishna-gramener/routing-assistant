@@ -18,7 +18,6 @@ const state = {
     messages: [],
     originalPrompts: {},
     config: {
-        tone: 'Professional',
         format: 'Summary', 
         language: 'English'
     }
@@ -383,26 +382,6 @@ const addConfigToPrompt = (originalPrompt, config) => {
 const generateConfigInstructions = (config) => {
     let instructions = '\nIMPORTANT RESPONSE REQUIREMENTS:\n';
     
-    // Tone instructions
-    switch(config.tone) {
-        case 'Professional':
-            instructions += '- Use formal, professional language suitable for government officials\n';
-            instructions += '- Maintain objective, analytical tone throughout\n';
-            break;
-        case 'Casual':
-            instructions += '- Use conversational, approachable language\n';
-            instructions += '- Keep tone friendly but still informative\n';
-            break;
-        case 'Informational':
-            instructions += '- Focus on clear, factual presentation\n';
-            instructions += '- Use neutral, educational tone\n';
-            break;
-        case 'Enthusiastic':
-            instructions += '- Use encouraging, positive language\n';
-            instructions += '- Show enthusiasm for improvements and solutions\n';
-            break;
-    }
-    
     // Format instructions  
     switch(config.format) {
         case 'Summary':
@@ -443,10 +422,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('reset-btn').addEventListener('click', refreshChat);
     
     // Add dropdown event listeners
-    document.getElementById('tone-select').addEventListener('change', (e) => {
-        updateConfig('tone', e.target.value);
-    });
-    
     document.getElementById('format-select').addEventListener('change', (e) => {
         updateConfig('format', e.target.value);
     });

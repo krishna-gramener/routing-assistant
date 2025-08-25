@@ -1,2 +1,2 @@
-prompts/system_prompt_mmr.txt - Use for fact based questions
-prompts/system_prompt_mmr_data_only.txt - Use for comparision/ trend analysis
+prompts/Comparison_Questions.txt - nstructions for comparing maternal health data between districts/blocks with structured tables, observations, and improvement recommendations.
+prompts/Factual_Questions.txt - Instructions for ranking districts by maternal health indicators with rank tables, detailed observations, and best practice examples.
