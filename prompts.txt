@@ -1,2 +1,3 @@
 prompts/Comparison_Questions.txt - nstructions for comparing maternal health data between districts/blocks with structured tables, observations, and improvement recommendations.
 prompts/Factual_Questions.txt - Instructions for ranking districts by maternal health indicators with rank tables, detailed observations, and best practice examples.
+prompts/Top_Bottom_Questions.txt - Instructions for analyzing top and bottom performing districts/blocks in maternal health indicators with structured tables, key observations, improvement pathways, and best practice recommendations.
