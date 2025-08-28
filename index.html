@@ -97,8 +97,11 @@
         <!-- Search Interface -->
         <div class="mb-4">
             <div class="input-group input-group-lg">
-                <input type="text" class="form-control rounded-start-3" id="user-question" 
+                <input type="text" class="form-control" id="user-question" 
                        placeholder="Ask Your Question Here" disabled>
+                <button class="btn btn-outline-primary" id="mic-btn" title="Click to speak">
+                    <i class="bi bi-mic" id="mic-icon"></i>
+                </button>
                 <button class="btn btn-primary" id="send-btn" disabled>
                     <span id="send-text">Search</span>
                     <span id="loading-spinner" class="spinner-border spinner-border-sm d-none ms-2"></span>
@@ -142,6 +145,93 @@
             // Trigger the send button click to auto-submit
             sendButton.click();
         }
+
+        // Speech Recognition Setup
+        let recognition = null;
+        let isListening = false;
+
+        function initializeSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    const micBtn = document.getElementById('mic-btn');
+                    const micIcon = document.getElementById('mic-icon');
+                    micBtn.classList.remove('btn-outline-primary');
+                    micBtn.classList.add('btn-danger');
+                    micIcon.classList.remove('bi-mic');
+                    micIcon.classList.add('bi-mic-fill');
+                    micBtn.title = 'Listening... Click to stop';
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    const userQuestionInput = document.getElementById('user-question');
+                    const sendButton = document.getElementById('send-btn');
+                    
+                    userQuestionInput.value = transcript;
+                    
+                    // Enable the input and send button
+                    if (userQuestionInput.disabled) {
+                        userQuestionInput.disabled = false;
+                    }
+                    if (sendButton.disabled) {
+                        sendButton.disabled = false;
+                    }
+                };
+                
+                recognition.onend = function() {
+                    isListening = false;
+                    const micBtn = document.getElementById('mic-btn');
+                    const micIcon = document.getElementById('mic-icon');
+                    micBtn.classList.remove('btn-danger');
+                    micBtn.classList.add('btn-outline-primary');
+                    micIcon.classList.remove('bi-mic-fill');
+                    micIcon.classList.add('bi-mic');
+                    micBtn.title = 'Click to speak';
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    isListening = false;
+                    const micBtn = document.getElementById('mic-btn');
+                    const micIcon = document.getElementById('mic-icon');
+                    micBtn.classList.remove('btn-danger');
+                    micBtn.classList.add('btn-outline-primary');
+                    micIcon.classList.remove('bi-mic-fill');
+                    micIcon.classList.add('bi-mic');
+                    micBtn.title = 'Click to speak';
+                };
+                
+                return true;
+            } else {
+                console.warn('Speech Recognition not supported');
+                document.getElementById('mic-btn').style.display = 'none';
+                return false;
+            }
+        }
+
+        // Initialize speech recognition when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSpeechRecognition();
+            
+            // Add click event to microphone button
+            document.getElementById('mic-btn').addEventListener('click', function() {
+                if (!recognition) return;
+                
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+        });
     </script>
 </body>
 </html>
