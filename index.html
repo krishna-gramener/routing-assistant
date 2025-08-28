@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Insights Platform</title>
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/NITI_Aayog_logo.svg/1280px-NITI_Aayog_logo.svg.png" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -13,8 +12,6 @@
     <nav class="navbar navbar-expand-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
         <div class="container">
             <div class="d-flex align-items-center">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/NITI_Aayog_logo.svg/1280px-NITI_Aayog_logo.svg.png" 
-                     alt="NITI Aayog Logo" height="40" class="me-3">
                 <span class="navbar-brand mb-0 h5 fw-bold text-white">Conversational Data Insights Platform</span>
             </div>
             <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
@@ -61,16 +58,19 @@
                 <h6 class="fw-semibold mb-3 text-dark">Sample Questions</h6>
                 <div class="d-grid gap-2">
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        Rank the top 5 and bottom 5 districts by MMR
+                        Which districts in UP have the highest percentage of mothers with 4+ ANC visits
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi
+                        What is the ANC 4+ coverage in Lucknow district
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        Rank the top and bottom districts by Iron-Folic Acid consumption
+                        What percentage of deliveries are institutional in Bareilly
                     </button>
                     <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
-                        What are the key strategies to improve maternal health in rural areas?
+                        Compare dropout rates for girls and boys in Bareilly at upper primary level
+                    </button>
+                    <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
+                        Compare Lucknow, Bareilly, and Gorakhpur across both girls' and boys' dropout rates at secondary level
                     </button>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                         <label class="form-label small fw-semibold text-uppercase text-muted">Format</label>
                         <select class="form-select" id="format-select">
                             <option value="Summary">Summary</option>
-                            <option value="Report">Report</option>
+                            <option value="e-mail">e-mail</option>
                             <option value="Bullet Points">Bullet Points</option>
                         </select>
                     </div>
