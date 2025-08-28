@@ -114,6 +114,20 @@
 
         <!-- Chat Area -->
         <div class="card" style="min-height: 400px;" id="chat-messages">
+            <div class="card-header d-flex justify-content-between align-items-center d-none" id="chat-header">
+                <h6 class="mb-0">Analysis Results</h6>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-secondary" id="speak-btn" title="Read aloud">
+                        <i class="bi bi-volume-up" id="speak-icon"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary d-none" id="pause-btn" title="Pause reading">
+                        <i class="bi bi-pause"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary d-none" id="stop-btn" title="Stop reading">
+                        <i class="bi bi-stop"></i>
+                    </button>
+                </div>
+            </div>
             <div class="card-body d-flex align-items-center justify-content-center">
                 <div class="text-center text-muted">
                     <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
@@ -150,6 +164,12 @@
         let recognition = null;
         let isListening = false;
 
+        // Text-to-Speech Setup
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let isSpeaking = false;
+        let isPaused = false;
+
         function initializeSpeechRecognition() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -184,6 +204,11 @@
                     if (sendButton.disabled) {
                         sendButton.disabled = false;
                     }
+                    
+                    // Auto-submit after a short delay to allow user to see the text
+                    setTimeout(() => {
+                        sendButton.click();
+                    }, 500);
                 };
                 
                 recognition.onend = function() {
@@ -217,9 +242,158 @@
             }
         }
 
+        // Text-to-Speech Functions
+        function speakText(text) {
+            if (!text || !speechSynthesis) return;
+            
+            // Stop any current speech
+            stopSpeaking();
+            
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.rate = 0.9;
+            currentUtterance.pitch = 1;
+            currentUtterance.volume = 1;
+            
+            currentUtterance.onstart = function() {
+                isSpeaking = true;
+                isPaused = false;
+                updateSpeakControls();
+            };
+            
+            currentUtterance.onend = function() {
+                isSpeaking = false;
+                isPaused = false;
+                currentUtterance = null;
+                updateSpeakControls();
+            };
+            
+            currentUtterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+                isSpeaking = false;
+                isPaused = false;
+                currentUtterance = null;
+                updateSpeakControls();
+            };
+            
+            speechSynthesis.speak(currentUtterance);
+        }
+        
+        function pauseSpeaking() {
+            if (speechSynthesis && isSpeaking && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+                updateSpeakControls();
+            }
+        }
+        
+        function resumeSpeaking() {
+            if (speechSynthesis && isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+                updateSpeakControls();
+            }
+        }
+        
+        function stopSpeaking() {
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                isPaused = false;
+                currentUtterance = null;
+                updateSpeakControls();
+            }
+        }
+        
+        function updateSpeakControls() {
+            const speakBtn = document.getElementById('speak-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const speakIcon = document.getElementById('speak-icon');
+            
+            if (isSpeaking && !isPaused) {
+                speakBtn.classList.add('d-none');
+                pauseBtn.classList.remove('d-none');
+                stopBtn.classList.remove('d-none');
+            } else if (isSpeaking && isPaused) {
+                speakBtn.classList.remove('d-none');
+                pauseBtn.classList.add('d-none');
+                stopBtn.classList.remove('d-none');
+                speakIcon.className = 'bi bi-play';
+                speakBtn.title = 'Resume reading';
+            } else {
+                speakBtn.classList.remove('d-none');
+                pauseBtn.classList.add('d-none');
+                stopBtn.classList.add('d-none');
+                speakIcon.className = 'bi bi-volume-up';
+                speakBtn.title = 'Read aloud';
+            }
+        }
+        
+        function getAnalysisText() {
+            const chatBody = document.querySelector('#chat-messages .card-body');
+            if (!chatBody) return '';
+            
+            // Get only assistant messages (analysis results), skip user queries
+            const assistantMessages = chatBody.querySelectorAll('.alert:not(.alert-primary)');
+            
+            if (assistantMessages.length === 0) {
+                return '';
+            }
+            
+            // Extract text from assistant messages only
+            let analysisText = '';
+            assistantMessages.forEach(message => {
+                const messageContent = message.querySelector('.message-content');
+                if (messageContent) {
+                    const text = messageContent.textContent || messageContent.innerText || '';
+                    analysisText += text.trim() + '\n\n';
+                }
+            });
+            
+            return analysisText.trim();
+        }
+        
+        function showSpeakControls() {
+            const chatHeader = document.getElementById('chat-header');
+            chatHeader.classList.remove('d-none');
+        }
+
+        // Function to observe when analysis results are added
+        function observeChatChanges() {
+            const chatBody = document.querySelector('#chat-messages .card-body');
+            if (!chatBody) return;
+
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        // Check if assistant message was added
+                        const addedNodes = Array.from(mutation.addedNodes);
+                        const hasAssistantMessage = addedNodes.some(node => 
+                            node.nodeType === Node.ELEMENT_NODE && 
+                            node.classList && 
+                            node.classList.contains('alert') && 
+                            !node.classList.contains('alert-primary')
+                        );
+                        
+                        if (hasAssistantMessage) {
+                            setTimeout(() => {
+                                showSpeakControls();
+                            }, 100); // Small delay to ensure content is rendered
+                        }
+                    }
+                });
+            });
+
+            observer.observe(chatBody, {
+                childList: true,
+                subtree: true
+            });
+        }
+
         // Initialize speech recognition when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeSpeechRecognition();
+            observeChatChanges(); // Start observing for chat changes
             
             // Add click event to microphone button
             document.getElementById('mic-btn').addEventListener('click', function() {
@@ -230,6 +404,26 @@
                 } else {
                     recognition.start();
                 }
+            });
+            
+            // Add click events for speech controls
+            document.getElementById('speak-btn').addEventListener('click', function() {
+                if (isPaused) {
+                    resumeSpeaking();
+                } else {
+                    const text = getAnalysisText();
+                    if (text) {
+                        speakText(text);
+                    }
+                }
+            });
+            
+            document.getElementById('pause-btn').addEventListener('click', function() {
+                pauseSpeaking();
+            });
+            
+            document.getElementById('stop-btn').addEventListener('click', function() {
+                stopSpeaking();
             });
         });
     </script>
