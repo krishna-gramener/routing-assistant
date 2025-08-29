@@ -3,6 +3,8 @@ import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2/+esm";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@9/+esm";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/+esm";
 import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
+import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@3/lit-html.js';
+import { SpeechManager } from './speech.js';
 
 // Configure marked to handle tables and other extensions
 marked.use({
@@ -35,6 +37,7 @@ const state = {
     format: "Summary",
     language: "English",
   },
+  speechManager: null,
 };
 
 const extractTextFromPdf = async (url) => {
@@ -139,43 +142,57 @@ const handleSendMessage = async () => {
 const refreshChat = () => {
   state.messages = [];
   const container = document.getElementById("chat-messages");
-  container.innerHTML = `
-        <div class="card-body d-flex align-items-center justify-content-center">
-            <div class="text-center text-muted">
-                <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
-                <p class="mb-0">Your healthcare analysis results will appear here</p>
-            </div>
-        </div>
-    `;
-
+  
+  // Create empty state template using lit-html
+  const emptyStateTemplate = html`
+    <div class="card-body d-flex align-items-center justify-content-center">
+      <div class="text-center text-muted">
+        <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
+        <p class="mb-0">Your healthcare analysis results will appear here</p>
+      </div>
+    </div>
+  `;
+  
+  render(emptyStateTemplate, container);
+  
   // Update reset button state
   updateResetButton();
 };
 
 const updateResetButton = () => {
   const resetBtn = document.getElementById("reset-btn");
-  if (state.messages.length > 0) {
-    resetBtn.classList.remove("btn-outline-secondary");
-    resetBtn.classList.add("btn-outline-danger");
-    resetBtn.title = "Reset Chat - Clear conversation history";
-  } else {
-    resetBtn.classList.remove("btn-outline-danger");
-    resetBtn.classList.add("btn-outline-secondary");
-    resetBtn.title = "Reset Chat";
-  }
+  const hasMessages = state.messages.length > 0;
+  
+  // Use modern classList methods and conditional logic
+  resetBtn.classList.toggle("btn-outline-danger", hasMessages);
+  resetBtn.classList.toggle("btn-outline-secondary", !hasMessages);
+  resetBtn.title = hasMessages ? "Reset Chat - Clear conversation history" : "Reset Chat";
 };
 
 const loadFiles = async () => {
-  document.getElementById("files-status").textContent = "Loading...";
-  document.getElementById("files-status").className = "badge bg-warning";
-  state.prompts = await (await fetch("prompts.txt")).text();
-  state.fileList = await (await fetch("file-list.txt")).text();
+  const filesStatus = document.getElementById("files-status");
+  
+  // Set loading state
+  filesStatus.textContent = "Loading...";
+  filesStatus.className = "badge bg-warning";
+  
+  try {
+    state.prompts = await (await fetch("prompts.txt")).text();
+    state.fileList = await (await fetch("file-list.txt")).text();
 
-  // Load and store original prompts for modification
-  await loadOriginalPrompts();
+    // Load and store original prompts for modification
+    await loadOriginalPrompts();
 
-  document.getElementById("files-status").textContent = "Ready";
-  document.getElementById("files-status").className = "badge bg-success";
+    // Set success state
+    filesStatus.textContent = "Ready";
+    filesStatus.className = "badge bg-success";
+  } catch (error) {
+    // Set error state
+    filesStatus.textContent = "Error";
+    filesStatus.className = "badge bg-danger";
+    console.error("Failed to load files:", error);
+  }
+  
   updateUIState();
 };
 
@@ -392,39 +409,58 @@ const addMessage = (sender, content) => {
     emptyState.className = "card-body";
   }
 
-  const div = document.createElement("div");
+  const copyButtonId = `copy-btn-${Date.now()}`;
+  
+  // Create message template using lit-html
+  let messageTemplate;
+  
   if (sender === "user") {
-    div.className = "alert alert-primary ms-5 mb-3";
-    div.innerHTML = `<div class="fw-semibold mb-2 small text-uppercase">QUERY</div><div class="message-content">${marked.parse(
-      content
-    )}</div>`;
-  } else {
-    div.className = "alert alert-light border me-5 mb-3 position-relative";
-    const copyButtonId = `copy-btn-${Date.now()}`;
-    div.innerHTML = `
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <div class="fw-semibold small text-uppercase text-muted">ANALYSIS</div>
-        <button class="btn btn-outline-secondary btn-sm copy-btn" id="${copyButtonId}" title="Copy response">
-          <i class="bi bi-clipboard"></i>
-        </button>
+    messageTemplate = html`
+      <div class="alert alert-primary ms-5 mb-3">
+        <div class="fw-semibold mb-2 small text-uppercase">QUERY</div>
+        <div class="message-content">${content}</div>
       </div>
-      <div class="message-content">${marked.parse(content)}</div>`;
-    
-    // Add copy functionality
-    setTimeout(() => {
-      const copyBtn = document.getElementById(copyButtonId);
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          const messageContent = div.querySelector('.message-content');
-          copyToClipboard(messageContent, copyBtn);
-        });
-      }
-    }, 0);
+    `;
+  } else {
+    messageTemplate = html`
+      <div class="alert alert-light border me-5 mb-3 position-relative">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="fw-semibold small text-uppercase text-muted">ANALYSIS</div>
+          <button 
+            class="btn btn-outline-secondary btn-sm copy-btn" 
+            id="${copyButtonId}" 
+            title="Copy response"
+            @click=${(e) => {
+              const messageContent = e.target.closest('.alert').querySelector('.message-content');
+              copyToClipboard(messageContent, e.target);
+            }}
+          >
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+        <div class="message-content"></div>
+      </div>
+    `;
   }
 
-  container.querySelector(".card-body").appendChild(div);
+  // Create a temporary container for the message
+  const tempDiv = document.createElement('div');
+  render(messageTemplate, tempDiv);
+  
+  const messageElement = tempDiv.firstElementChild;
+  
+  // For assistant messages, set the parsed markdown content
+  if (sender !== "user") {
+    const messageContent = messageElement.querySelector('.message-content');
+    messageContent.innerHTML = marked.parse(content);
+  }
+  
+  // Append the rendered message to the chat body
+  const chatBody = container.querySelector(".card-body");
+  chatBody.appendChild(messageElement);
+  
   container.scrollTop = container.scrollHeight;
-  return div;
+  return messageElement;
 };
 
 const copyToClipboard = async (contentElement, button) => {
@@ -504,9 +540,14 @@ const showCopyError = (button) => {
 };
 
 const showLoading = (show) => {
-  document.getElementById("send-text").classList.toggle("d-none", show);
-  document.getElementById("loading-spinner").classList.toggle("d-none", !show);
-  document.getElementById("send-btn").disabled = show;
+  const sendText = document.getElementById("send-text");
+  const loadingSpinner = document.getElementById("loading-spinner");
+  const sendBtn = document.getElementById("send-btn");
+  
+  // Use modern toggle methods for cleaner code
+  sendText.classList.toggle("d-none", show);
+  loadingSpinner.classList.toggle("d-none", !show);
+  sendBtn.disabled = show;
 };
 
 const updateConfig = (type, value) => {
@@ -568,32 +609,51 @@ const generateConfigInstructions = (config) => {
   return instructions;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  document
-    .getElementById("config-llm-btn")
-    .addEventListener("click", configureLLM);
-  document
-    .getElementById("send-btn")
-    .addEventListener("click", handleSendMessage);
-  document
-    .getElementById("user-question")
-    .addEventListener(
-      "keypress",
-      (e) => e.key === "Enter" && handleSendMessage()
-    );
+// Modern event handling using a centralized approach
+const initializeEventListeners = () => {
+  const elements = {
+    configLlmBtn: document.getElementById("config-llm-btn"),
+    sendBtn: document.getElementById("send-btn"),
+    userQuestion: document.getElementById("user-question"),
+    resetBtn: document.getElementById("reset-btn"),
+    formatSelect: document.getElementById("format-select"),
+    languageSelect: document.getElementById("language-select")
+  };
 
-  // Add reset button event listener
-  document.getElementById("reset-btn").addEventListener("click", refreshChat);
+  // Configuration button
+  elements.configLlmBtn?.addEventListener("click", configureLLM);
 
-  // Add dropdown event listeners
-  document.getElementById("format-select").addEventListener("change", (e) => {
+  // Send button  
+  elements.sendBtn?.addEventListener("click", handleSendMessage);
+
+  // Enter key handling for question input
+  elements.userQuestion?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  });
+
+  // Reset button
+  elements.resetBtn?.addEventListener("click", refreshChat);
+
+  // Dropdown change handlers using modern approach
+  elements.formatSelect?.addEventListener("change", (e) => {
     updateConfig("format", e.target.value);
   });
 
-  document.getElementById("language-select").addEventListener("change", (e) => {
+  elements.languageSelect?.addEventListener("change", (e) => {
     updateConfig("language", e.target.value);
   });
+};
 
+document.addEventListener("DOMContentLoaded", () => {
+  initializeEventListeners();
+  
+  // Initialize speech manager
+  state.speechManager = new SpeechManager();
+  state.speechManager.initializeSpeechControls();
+  state.speechManager.observeChatChanges();
+  
   loadFiles();
   checkExistingConfig();
 });

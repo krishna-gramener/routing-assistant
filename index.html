@@ -56,14 +56,14 @@
             <!-- Left Column: Sample Questions -->
             <div class="col-md-6">
                 <h6 class="fw-semibold mb-3 text-dark">Sample Questions</h6>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
+                <div class="d-grid gap-2" id="sample-questions">
+                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Rank the top 5 and bottom 5 districts by MMR">
                         Rank the top 5 and bottom 5 districts by MMR
                     </button>
-                    <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
+                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
                         Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi
                     </button>
-                    <button class="btn btn-outline-secondary text-start" onclick="fillQuestion(this)">
+                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Rank the top and bottom districts by Iron-Folic Acid consumption">
                         Rank the top and bottom districts by Iron-Folic Acid consumption
                     </button>
                 </div>
@@ -139,293 +139,39 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="script.js"></script>
-    <script>
-        function fillQuestion(button) {
-            const question = button.textContent.trim();
-            const userQuestionInput = document.getElementById('user-question');
-            const sendButton = document.getElementById('send-btn');
-            
-            // Fill the input field
-            userQuestionInput.value = question;
-            
-            // Enable the input and send button if they're disabled
-            if (userQuestionInput.disabled) {
-                userQuestionInput.disabled = false;
-            }
-            if (sendButton.disabled) {
-                sendButton.disabled = false;
-            }
-            
-            // Trigger the send button click to auto-submit
-            sendButton.click();
-        }
-
-        // Speech Recognition Setup
-        let recognition = null;
-        let isListening = false;
-
-        // Text-to-Speech Setup
-        let speechSynthesis = window.speechSynthesis;
-        let currentUtterance = null;
-        let isSpeaking = false;
-        let isPaused = false;
-
-        function initializeSpeechRecognition() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = 'en-US';
-                
-                recognition.onstart = function() {
-                    isListening = true;
-                    const micBtn = document.getElementById('mic-btn');
-                    const micIcon = document.getElementById('mic-icon');
-                    micBtn.classList.remove('btn-outline-primary');
-                    micBtn.classList.add('btn-danger');
-                    micIcon.classList.remove('bi-mic');
-                    micIcon.classList.add('bi-mic-fill');
-                    micBtn.title = 'Listening... Click to stop';
-                };
-                
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    const userQuestionInput = document.getElementById('user-question');
-                    const sendButton = document.getElementById('send-btn');
-                    
-                    userQuestionInput.value = transcript;
-                    
-                    // Enable the input and send button
-                    if (userQuestionInput.disabled) {
-                        userQuestionInput.disabled = false;
-                    }
-                    if (sendButton.disabled) {
-                        sendButton.disabled = false;
-                    }
-                    
-                    // Auto-submit after a short delay to allow user to see the text
-                    setTimeout(() => {
-                        sendButton.click();
-                    }, 500);
-                };
-                
-                recognition.onend = function() {
-                    isListening = false;
-                    const micBtn = document.getElementById('mic-btn');
-                    const micIcon = document.getElementById('mic-icon');
-                    micBtn.classList.remove('btn-danger');
-                    micBtn.classList.add('btn-outline-primary');
-                    micIcon.classList.remove('bi-mic-fill');
-                    micIcon.classList.add('bi-mic');
-                    micBtn.title = 'Click to speak';
-                };
-                
-                recognition.onerror = function(event) {
-                    console.error('Speech recognition error:', event.error);
-                    isListening = false;
-                    const micBtn = document.getElementById('mic-btn');
-                    const micIcon = document.getElementById('mic-icon');
-                    micBtn.classList.remove('btn-danger');
-                    micBtn.classList.add('btn-outline-primary');
-                    micIcon.classList.remove('bi-mic-fill');
-                    micIcon.classList.add('bi-mic');
-                    micBtn.title = 'Click to speak';
-                };
-                
-                return true;
-            } else {
-                console.warn('Speech Recognition not supported');
-                document.getElementById('mic-btn').style.display = 'none';
-                return false;
-            }
-        }
-
-        // Text-to-Speech Functions
-        function speakText(text) {
-            if (!text || !speechSynthesis) return;
-            
-            // Stop any current speech
-            stopSpeaking();
-            
-            currentUtterance = new SpeechSynthesisUtterance(text);
-            currentUtterance.rate = 0.9;
-            currentUtterance.pitch = 1;
-            currentUtterance.volume = 1;
-            
-            currentUtterance.onstart = function() {
-                isSpeaking = true;
-                isPaused = false;
-                updateSpeakControls();
-            };
-            
-            currentUtterance.onend = function() {
-                isSpeaking = false;
-                isPaused = false;
-                currentUtterance = null;
-                updateSpeakControls();
-            };
-            
-            currentUtterance.onerror = function(event) {
-                console.error('Speech synthesis error:', event.error);
-                isSpeaking = false;
-                isPaused = false;
-                currentUtterance = null;
-                updateSpeakControls();
-            };
-            
-            speechSynthesis.speak(currentUtterance);
-        }
+    <script type="module">
+        import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@3/lit-html.js';
         
-        function pauseSpeaking() {
-            if (speechSynthesis && isSpeaking && !isPaused) {
-                speechSynthesis.pause();
-                isPaused = true;
-                updateSpeakControls();
-            }
-        }
-        
-        function resumeSpeaking() {
-            if (speechSynthesis && isPaused) {
-                speechSynthesis.resume();
-                isPaused = false;
-                updateSpeakControls();
-            }
-        }
-        
-        function stopSpeaking() {
-            if (speechSynthesis) {
-                speechSynthesis.cancel();
-                isSpeaking = false;
-                isPaused = false;
-                currentUtterance = null;
-                updateSpeakControls();
-            }
-        }
-        
-        function updateSpeakControls() {
-            const speakBtn = document.getElementById('speak-btn');
-            const pauseBtn = document.getElementById('pause-btn');
-            const stopBtn = document.getElementById('stop-btn');
-            const speakIcon = document.getElementById('speak-icon');
+        // Modern event handling for sample questions
+        document.addEventListener('DOMContentLoaded', function() {
+            const sampleQuestionsContainer = document.getElementById('sample-questions');
             
-            if (isSpeaking && !isPaused) {
-                speakBtn.classList.add('d-none');
-                pauseBtn.classList.remove('d-none');
-                stopBtn.classList.remove('d-none');
-            } else if (isSpeaking && isPaused) {
-                speakBtn.classList.remove('d-none');
-                pauseBtn.classList.add('d-none');
-                stopBtn.classList.remove('d-none');
-                speakIcon.className = 'bi bi-play';
-                speakBtn.title = 'Resume reading';
-            } else {
-                speakBtn.classList.remove('d-none');
-                pauseBtn.classList.add('d-none');
-                stopBtn.classList.add('d-none');
-                speakIcon.className = 'bi bi-volume-up';
-                speakBtn.title = 'Read aloud';
-            }
-        }
-        
-        function getAnalysisText() {
-            const chatBody = document.querySelector('#chat-messages .card-body');
-            if (!chatBody) return '';
-            
-            // Get only assistant messages (analysis results), skip user queries
-            const assistantMessages = chatBody.querySelectorAll('.alert:not(.alert-primary)');
-            
-            if (assistantMessages.length === 0) {
-                return '';
-            }
-            
-            // Extract text from assistant messages only
-            let analysisText = '';
-            assistantMessages.forEach(message => {
-                const messageContent = message.querySelector('.message-content');
-                if (messageContent) {
-                    const text = messageContent.textContent || messageContent.innerText || '';
-                    analysisText += text.trim() + '\n\n';
-                }
-            });
-            
-            return analysisText.trim();
-        }
-        
-        function showSpeakControls() {
-            const chatHeader = document.getElementById('chat-header');
-            chatHeader.classList.remove('d-none');
-        }
-
-        // Function to observe when analysis results are added
-        function observeChatChanges() {
-            const chatBody = document.querySelector('#chat-messages .card-body');
-            if (!chatBody) return;
-
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        // Check if assistant message was added
-                        const addedNodes = Array.from(mutation.addedNodes);
-                        const hasAssistantMessage = addedNodes.some(node => 
-                            node.nodeType === Node.ELEMENT_NODE && 
-                            node.classList && 
-                            node.classList.contains('alert') && 
-                            !node.classList.contains('alert-primary')
-                        );
+            if (sampleQuestionsContainer) {
+                sampleQuestionsContainer.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('sample-question-btn')) {
+                        const question = event.target.dataset.question;
+                        const userQuestionInput = document.getElementById('user-question');
+                        const sendButton = document.getElementById('send-btn');
                         
-                        if (hasAssistantMessage) {
-                            setTimeout(() => {
-                                showSpeakControls();
-                            }, 100); // Small delay to ensure content is rendered
+                        // Fill the input field
+                        userQuestionInput.value = question;
+                        
+                        // Enable the input and send button if they're disabled
+                        if (userQuestionInput.disabled) {
+                            userQuestionInput.disabled = false;
                         }
+                        if (sendButton.disabled) {
+                            sendButton.disabled = false;
+                        }
+                        
+                        // Trigger the send button click to auto-submit
+                        sendButton.click();
                     }
                 });
-            });
-
-            observer.observe(chatBody, {
-                childList: true,
-                subtree: true
-            });
-        }
-
-        // Initialize speech recognition when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSpeechRecognition();
-            observeChatChanges(); // Start observing for chat changes
-            
-            // Add click event to microphone button
-            document.getElementById('mic-btn').addEventListener('click', function() {
-                if (!recognition) return;
-                
-                if (isListening) {
-                    recognition.stop();
-                } else {
-                    recognition.start();
-                }
-            });
-            
-            // Add click events for speech controls
-            document.getElementById('speak-btn').addEventListener('click', function() {
-                if (isPaused) {
-                    resumeSpeaking();
-                } else {
-                    const text = getAnalysisText();
-                    if (text) {
-                        speakText(text);
-                    }
-                }
-            });
-            
-            document.getElementById('pause-btn').addEventListener('click', function() {
-                pauseSpeaking();
-            });
-            
-            document.getElementById('stop-btn').addEventListener('click', function() {
-                stopSpeaking();
-            });
+            }
         });
+
+
     </script>
 </body>
 </html>
