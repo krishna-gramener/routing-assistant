@@ -459,7 +459,11 @@ const addMessage = (sender, content) => {
   const chatBody = container.querySelector(".card-body");
   chatBody.appendChild(messageElement);
   
-  container.scrollTop = container.scrollHeight;
+  // Auto-scroll to the latest message with smooth animation
+  setTimeout(() => {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }, 100);
+  
   return messageElement;
 };
 

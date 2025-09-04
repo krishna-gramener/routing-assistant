@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Insights Platform</title>
+    <title>NITI Data Insights Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
+        <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <span class="navbar-brand mb-0 h5 fw-bold text-white">Conversational Data Insights Platform</span>
+                <i class="bi bi-graph-up-arrow me-2 fs-4"></i>
+                <span class="navbar-brand mb-0 h5 fw-bold">Data Insights Platform</span>
             </div>
             <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
                 <i class="bi bi-gear me-1"></i>Settings
@@ -23,15 +24,15 @@
     <!-- Collapsible Settings Panel -->
     <div class="collapse" id="settingsCollapse">
         <div class="bg-white border-bottom shadow-sm">
-            <div class="container py-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <small class="text-muted">Data Sources:</small>
+            <div class="container-fluid py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <small class="text-muted fw-semibold">Data Sources:</small>
                         <span class="badge bg-secondary ms-2" id="files-status">Loading...</span>
                     </div>
-                    <div class="text-end">
-                        <button class="btn btn-sm btn-outline-primary" id="config-llm-btn">
-                            Initialize Analysis Engine
+                    <div class="col-md-6 text-md-end">
+                        <button class="btn btn-primary btn-sm" id="config-llm-btn">
+                            <i class="bi bi-play-circle me-1"></i>Initialize Analysis Engine
                         </button>
                         <div class="mt-1">
                             <small class="text-muted" id="config-status">Click to activate</small>
@@ -42,97 +43,111 @@
         </div>
     </div>
 
-    <div class="container py-5">
-        <!-- Title and Description -->
-        <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold text-dark mb-3">Data Insights Platform</h1>
-            <p class="lead text-muted">
-                The system highlights how data can be queried and compared in dialogue to produce decision-ready insights.
-            </p>
-        </div>
-
-            <!-- Two Column Layout: Sample Questions and Configuration -->
-        <div class="row mb-4">
-            <!-- Left Column: Sample Questions -->
-            <div class="col-md-6">
-                <h6 class="fw-semibold mb-3 text-dark">Sample Questions</h6>
-                <div class="d-grid gap-2" id="sample-questions">
-                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Rank the top 5 and bottom 5 districts by MMR">
-                        Rank the top 5 and bottom 5 districts by MMR
-                    </button>
-                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
-                        Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi
-                    </button>
-                    <button class="btn btn-outline-secondary text-start sample-question-btn" data-question="Rank the top and bottom districts by Iron-Folic Acid consumption">
-                        Rank the top and bottom districts by Iron-Folic Acid consumption
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Right Column: Configuration Options -->
-            <div class="col-md-6">
-                <h6 class="fw-semibold mb-3 text-dark">Response Settings</h6>
-                <div class="d-grid gap-3">
-                    <div>
-                        <label class="form-label small fw-semibold text-uppercase text-muted">Format</label>
-                        <select class="form-select" id="format-select">
-                            <option value="Summary">Summary</option>
-                            <option value="e-mail">e-mail</option>
-                            <option value="Bullet Points">Bullet Points</option>
-                        </select>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-bottom py-2">
+                        <h6 class="mb-0 fw-semibold text-dark">
+                            <i class="bi bi-lightbulb me-2"></i>Sample Questions
+                        </h6>
                     </div>
-                    <div>
-                        <label class="form-label small fw-semibold text-uppercase text-muted">Language</label>
-                        <select class="form-select" id="language-select">
-                            <option value="English">English</option>
-                            <option value="Hindi">Hindi</option>
-                            <option value="Marathi">Marathi</option>
-                            <option value="Telugu">Telugu</option>
-                        </select>
+                    <div class="card-body py-2">
+                        <div class="d-grid gap-1" id="sample-questions">
+                            <button class="btn btn-outline-secondary text-start sample-question-btn text-decoration-none py-2" data-question="Rank the top 5 and bottom 5 districts by MMR">
+                                <i class="bi bi-list-ol me-2"></i>Rank districts by MMR
+                            </button>
+                            <button class="btn btn-outline-secondary text-start sample-question-btn text-decoration-none py-2" data-question="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
+                                <i class="bi bi-bar-chart me-2"></i>Compare anemia prevalence
+                            </button>
+                            <button class="btn btn-outline-secondary text-start sample-question-btn text-decoration-none py-2" data-question="Rank the top and bottom districts by Iron-Folic Acid consumption">
+                                <i class="bi bi-capsule me-2"></i>Iron-Folic Acid consumption
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Search Interface -->
-        <div class="mb-4">
-            <div class="input-group input-group-lg">
-                <input type="text" class="form-control" id="user-question" 
-                       placeholder="Ask Your Question Here" disabled>
-                <button class="btn btn-outline-primary" id="mic-btn" title="Click to speak">
-                    <i class="bi bi-mic" id="mic-icon"></i>
-                </button>
-                <button class="btn btn-primary" id="send-btn" disabled>
-                    <span id="send-text">Search</span>
-                    <span id="loading-spinner" class="spinner-border spinner-border-sm d-none ms-2"></span>
-                </button>
-                <button class="btn btn-outline-secondary rounded-end-3" id="reset-btn" title="Reset Chat">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Chat Area -->
-        <div class="card" style="min-height: 400px;" id="chat-messages">
-            <div class="card-header d-flex justify-content-between align-items-center d-none" id="chat-header">
-                <h6 class="mb-0">Analysis Results</h6>
-                <div class="btn-group btn-group-sm" role="group">
-                    <button class="btn btn-outline-secondary" id="speak-btn" title="Read aloud">
-                        <i class="bi bi-volume-up" id="speak-icon"></i>
-                    </button>
-                    <button class="btn btn-outline-secondary d-none" id="pause-btn" title="Pause reading">
-                        <i class="bi bi-pause"></i>
-                    </button>
-                    <button class="btn btn-outline-secondary d-none" id="stop-btn" title="Stop reading">
-                        <i class="bi bi-stop"></i>
-                    </button>
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-header bg-white border-bottom">
+                        <h6 class="mb-0 fw-semibold text-dark">
+                            <i class="bi bi-sliders me-2"></i>Response Settings
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Format</label>
+                            <select class="form-select form-select-sm" id="format-select">
+                                <option value="Summary">Summary</option>
+                                <option value="e-mail">E-mail</option>
+                                <option value="Bullet Points">Bullet Points</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label small fw-semibold text-muted">Language</label>
+                            <select class="form-select form-select-sm" id="language-select">
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Telugu">Telugu</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-body d-flex align-items-center justify-content-center">
-                <div class="text-center text-muted">
-                    <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
-                    <p class="mb-0">Your healthcare analysis results will appear here</p>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Search Interface -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <div class="input-group input-group-lg">
+                            <input type="text" class="form-control" id="user-question" 
+                                   placeholder="Ask your question about healthcare data..." disabled>
+                            <button class="btn btn-outline-secondary" id="mic-btn" title="Click to speak">
+                                <i class="bi bi-mic" id="mic-icon"></i>
+                            </button>
+                            <button class="btn btn-primary px-4" id="send-btn" disabled>
+                                <span id="send-text">Ask</span>
+                                <span id="loading-spinner" class="spinner-border spinner-border-sm d-none ms-2"></span>
+                            </button>
+                            <button class="btn btn-outline-secondary" id="reset-btn" title="Reset Chat">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Chat Area -->
+                <div class="card border-0 shadow-sm" style="min-height: 800px;" id="chat-messages">
+                    <div class="card-header bg-white border-bottom d-none" id="chat-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-semibold text-dark">
+                                <i class="bi bi-chat-text me-2"></i>Analysis Results
+                            </h6>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-outline-secondary" id="speak-btn" title="Read aloud">
+                                    <i class="bi bi-volume-up" id="speak-icon"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary d-none" id="pause-btn" title="Pause reading">
+                                    <i class="bi bi-pause"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary d-none" id="stop-btn" title="Stop reading">
+                                    <i class="bi bi-stop"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex align-items-center justify-content-center" id="chat-body" style="overflow-y: auto; max-height: 750px;">
+                        <div class="text-center text-muted">
+                            <i class="bi bi-chat-dots display-1 mb-3 opacity-25"></i>
+                            <h5 class="fw-light">Welcome to NITI Data Insights</h5>
+                            <p class="mb-0 text-muted">Ask questions about healthcare data to get AI-powered insights</p>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -170,8 +185,6 @@
                 });
             }
         });
-
-
     </script>
 </body>
 </html>
