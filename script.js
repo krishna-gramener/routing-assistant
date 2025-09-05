@@ -151,8 +151,9 @@ const refreshChat = () => {
   const emptyStateTemplate = html`
     <div class="card-body d-flex align-items-center justify-content-center">
       <div class="text-center text-muted">
-        <i class="bi bi-chat-text display-1 mb-3 opacity-25"></i>
-        <p class="mb-0">Your healthcare analysis results will appear here</p>
+        <i class="bi bi-graph-up-arrow display-1 mb-3 opacity-25"></i>
+        <h5 class="fw-light">Healthcare Data Analysis Ready</h5>
+        <p class="mb-0">Submit your query below to receive comprehensive analysis and insights</p>
       </div>
     </div>
   `;
@@ -383,8 +384,8 @@ const updateConfigStatus = () => {
   const status = document.getElementById("config-status");
   const btn = document.getElementById("config-llm-btn");
   if (state.llmConfig) {
-    status.textContent = "Analysis engine active";
-    btn.textContent = "Reconfigure Engine";
+    status.textContent = "Analysis engine operational";
+    btn.textContent = "Reconfigure Analysis Engine";
     btn.className = "btn btn-success btn-sm";
     // Auto-collapse settings panel only if it's currently open
     const settingsPanel = document.getElementById("settingsCollapse");
@@ -683,6 +684,13 @@ const showLoading = (show) => {
   sendText.classList.toggle("d-none", show);
   loadingSpinner.classList.toggle("d-none", !show);
   sendBtn.disabled = show;
+  
+  // Update button text for professional context
+  if (show) {
+    sendText.textContent = "Analyzing...";
+  } else {
+    sendText.textContent = "Analyze";
+  }
 };
 
 const updateConfig = (type, value) => {
@@ -713,17 +721,19 @@ const generateConfigInstructions = (config) => {
   // Format instructions
   switch (config.format) {
     case "Summary":
-      instructions += "- Provide concise summary format\n";
-      instructions += "- Focus on key points and main insights\n";
+      instructions += "- Provide executive summary format suitable for senior officials\n";
+      instructions += "- Focus on key findings, implications, and actionable recommendations\n";
+      instructions += "- Use professional language appropriate for government decision-making\n";
       break;
     case "e-mail":
-      instructions += "- Format as a professional e-mail\n";
-      instructions += "- Include appropriate subject line, greeting, and closing\n";
-      instructions += "- Use clear sections and professional tone suitable for email communication\n";
+      instructions += "- Format as an official memorandum\n";
+      instructions += "- Include appropriate subject line, formal greeting, and professional closing\n";
+      instructions += "- Use clear sections and authoritative tone suitable for official communication\n";
       break;
     case "Bullet Points":
-      instructions += "- Present information in clear bullet point format\n";
-      instructions += "- Use concise, actionable bullet points\n";
+      instructions += "- Present information as a policy brief with clear bullet points\n";
+      instructions += "- Use concise, actionable bullet points with policy implications\n";
+      instructions += "- Structure for quick decision-making by government officials\n";
       break;
   }
 
