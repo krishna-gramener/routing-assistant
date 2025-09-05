@@ -129,6 +129,10 @@ const handleSendMessage = async () => {
   const question = input.value.trim();
   if (!question) return;
 
+  // Hide follow-up questions when a new question is asked
+  const followupCard = document.getElementById("followup-questions-card");
+  followupCard.classList.add("d-none");
+
   showLoading(true);
   addMessage("user", question);
   state.messages.push({ role: "user", content: question });
@@ -155,6 +159,10 @@ const refreshChat = () => {
   
   render(emptyStateTemplate, container);
   
+  // Hide follow-up questions card
+  const followupCard = document.getElementById("followup-questions-card");
+  followupCard.classList.add("d-none");
+  
   // Update reset button state
   updateResetButton();
 };
@@ -167,6 +175,124 @@ const updateResetButton = () => {
   resetBtn.classList.toggle("btn-outline-danger", hasMessages);
   resetBtn.classList.toggle("btn-outline-secondary", !hasMessages);
   resetBtn.title = hasMessages ? "Reset Chat - Clear conversation history" : "Reset Chat";
+};
+
+const generateFollowUpQuestions = async (userQuestion, assistantResponse) => {
+  const followupCard = document.getElementById("followup-questions-card");
+  const followupContainer = document.getElementById("followup-questions-container");
+  const followupLoading = document.getElementById("followup-loading");
+
+  // Show the card and loading state
+  followupCard.classList.remove("d-none");
+  followupLoading.classList.remove("d-none");
+  followupContainer.innerHTML = "";
+
+  try {
+    const tools = [
+      {
+        type: "function",
+        function: {
+          name: "generate_followup_questions",
+          parameters: {
+            type: "object",
+            properties: {
+              questions: {
+                type: "array",
+                items: { type: "string" },
+                description: "Array of 3-4 contextual follow-up questions"
+              },
+              reasoning: { type: "string", description: "Why these questions are relevant" }
+            },
+            required: ["questions", "reasoning"]
+          }
+        }
+      }
+    ];
+
+    const followupPrompt = `
+You are an expert policy analyst helping government officials explore healthcare data. 
+Based on the user's question and the analysis provided, generate 3-4 highly relevant follow-up questions that would naturally extend the conversation and provide additional insights.
+
+Guidelines for follow-up questions:
+1. Build on the current analysis to explore deeper insights
+2. Focus on actionable policy implications  
+3. Suggest comparative analysis with other regions/metrics
+4. Explore root causes or intervention strategies
+5. Be specific and data-driven
+6. Use clear, professional language suitable for government officials
+
+Original Question: "${userQuestion}"
+Analysis Provided: "${assistantResponse.substring(0, 1000)}..."
+
+Available data includes: maternal mortality rates, anemia prevalence, iron-folic acid consumption, healthcare facility utilization, and district-level health indicators.
+
+Generate questions that would help the official make informed policy decisions or understand the data more comprehensively.
+`;
+
+    const response = await fetch(`${state.llmConfig.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${state.llmConfig.apiKey}`,
+      },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: followupPrompt }],
+        tools,
+        tool_choice: { type: "function", function: { name: "generate_followup_questions" } },
+        model: "gpt-4.1-mini",
+      }),
+    });
+
+    const result = await response.json();
+    const followupData = JSON.parse(result.choices[0].message.tool_calls[0].function.arguments);
+    
+    // Hide loading and display questions
+    followupLoading.classList.add("d-none");
+    displayFollowUpQuestions(followupData.questions);
+
+  } catch (error) {
+    console.error("Failed to generate follow-up questions:", error);
+    followupLoading.classList.add("d-none");
+    followupContainer.innerHTML = `
+      <div class="text-muted text-center">
+        <small>Unable to generate follow-up questions at this time.</small>
+      </div>
+    `;
+  }
+};
+
+const displayFollowUpQuestions = (questions) => {
+  const container = document.getElementById("followup-questions-container");
+  
+  const questionsTemplate = html`
+    ${questions.map((question, index) => html`
+      <button 
+        class="btn btn-outline-primary text-start followup-question-btn d-flex align-items-center" 
+        data-question="${question}"
+        @click=${() => handleFollowUpClick(question)}
+      >
+        <i class="bi bi-arrow-right-circle me-2 flex-shrink-0"></i>
+        <span class="text-truncate">${question}</span>
+      </button>
+    `)}
+  `;
+  
+  render(questionsTemplate, container);
+};
+
+const handleFollowUpClick = (question) => {
+  const userQuestionInput = document.getElementById("user-question");
+  const sendButton = document.getElementById("send-btn");
+  
+  // Fill the input field with the follow-up question
+  userQuestionInput.value = question;
+  
+  // Hide the follow-up questions card after selection
+  const followupCard = document.getElementById("followup-questions-card");
+  followupCard.classList.add("d-none");
+  
+  // Trigger the send button to submit the question
+  sendButton.click();
 };
 
 const loadFiles = async () => {
@@ -394,6 +520,11 @@ const processWithLLM = async (question, decision) => {
   }
 
   state.messages.push({ role: "assistant", content: assistantResponse });
+
+  // Generate follow-up questions after the first response
+  if (state.messages.length >= 2) { // User question + assistant response
+    await generateFollowUpQuestions(question, assistantResponse);
+  }
 
   // Update reset button state
   updateResetButton();

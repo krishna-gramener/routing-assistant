@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NITI Data Insights Platform</title>
+    <title>Data Insights Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
@@ -143,6 +143,26 @@
                             <i class="bi bi-chat-dots display-1 mb-3 opacity-25"></i>
                             <h5 class="fw-light">Welcome to NITI Data Insights</h5>
                             <p class="mb-0 text-muted">Ask questions about healthcare data to get AI-powered insights</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Follow-up Questions Section -->
+                <div class="card border-0 shadow-sm mt-3 d-none" id="followup-questions-card">
+                    <div class="card-header bg-gradient" style="background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+                            <h6 class="mb-0 fw-semibold text-dark">Suggested Follow-up Questions</h6>
+                            <small class="text-muted ms-auto">AI-generated based on your analysis</small>
+                        </div>
+                    </div>
+                    <div class="card-body py-3">
+                        <div id="followup-questions-container" class="d-grid gap-2">
+                            <!-- Follow-up questions will be dynamically inserted here -->
+                        </div>
+                        <div id="followup-loading" class="text-center text-muted d-none">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            <small>Generating personalized follow-up questions...</small>
                         </div>
                     </div>
                 </div>
