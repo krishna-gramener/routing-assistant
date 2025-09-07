@@ -183,34 +183,32 @@ const generateFollowUpQuestions = async (userQuestion, assistantResponse) => {
   const followupContainer = document.getElementById("followup-questions-container");
   const followupLoading = document.getElementById("followup-loading");
 
-  // Show the card and loading state
-  followupCard.classList.remove("d-none");
-  followupLoading.classList.remove("d-none");
-  followupContainer.innerHTML = "";
-
-  try {
-    const tools = [
-      {
-        type: "function",
-        function: {
-          name: "generate_followup_questions",
-          parameters: {
-            type: "object",
-            properties: {
-              questions: {
-                type: "array",
-                items: { type: "string" },
-                description: "Array of 3-4 contextual follow-up questions"
+  // Check if elements exist (they don't in the new interface)
+  if (!followupCard || !followupContainer || !followupLoading) {
+    // For new interface, get dynamic suggestions from LLM
+    if (typeof window.updateSuggestions === 'function') {
+      const tools = [
+        {
+          type: "function",
+          function: {
+            name: "generate_followup_questions",
+            parameters: {
+              type: "object",
+              properties: {
+                questions: {
+                  type: "array",
+                  items: { type: "string" },
+                  description: "Array of 3-4 contextual follow-up questions"
+                },
+                reasoning: { type: "string", description: "Why these questions are relevant" }
               },
-              reasoning: { type: "string", description: "Why these questions are relevant" }
-            },
-            required: ["questions", "reasoning"]
+              required: ["questions", "reasoning"]
+            }
           }
         }
-      }
-    ];
+      ];
 
-    const followupPrompt = `
+      const followupPrompt = `
 You are an expert policy analyst helping government officials explore healthcare data. 
 Based on the user's question and the analysis provided, generate 3-4 highly relevant follow-up questions that would naturally extend the conversation and provide additional insights.
 
@@ -230,40 +228,114 @@ Available data includes: maternal mortality rates, anemia prevalence, iron-folic
 Generate questions that would help the official make informed policy decisions or understand the data more comprehensively.
 `;
 
-    const response = await fetch(`${state.llmConfig.baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${state.llmConfig.apiKey}`,
-      },
-      body: JSON.stringify({
-        messages: [{ role: "user", content: followupPrompt }],
-        tools,
-        tool_choice: { type: "function", function: { name: "generate_followup_questions" } },
-        model: "gpt-4.1-mini",
-      }),
-    });
+      const response = await fetch(`${state.llmConfig.baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.llmConfig.apiKey}`,
+        },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: followupPrompt }],
+          tools,
+          tool_choice: { type: "function", function: { name: "generate_followup_questions" } },
+          model: "gpt-4.1-mini",
+        }),
+      });
 
-    const result = await response.json();
-    const followupData = JSON.parse(result.choices[0].message.tool_calls[0].function.arguments);
-    
-    // Hide loading and display questions
-    followupLoading.classList.add("d-none");
-    displayFollowUpQuestions(followupData.questions);
-
-  } catch (error) {
-    console.error("Failed to generate follow-up questions:", error);
-    followupLoading.classList.add("d-none");
-    followupContainer.innerHTML = `
-      <div class="text-muted text-center">
-        <small>Unable to generate follow-up questions at this time.</small>
-      </div>
-    `;
+      const result = await response.json();
+      const followupData = JSON.parse(result.choices[0].message.tool_calls[0].function.arguments);
+      
+      // Convert LLM questions to suggestion format
+      const dynamicSuggestions = followupData.questions.map((question, index) => ({
+        title: question.split('?')[0].substring(0, 30) + (question.split('?')[0].length > 30 ? '...' : ''),
+        description: question
+      }));
+      
+      window.updateSuggestions(dynamicSuggestions);
+    }
+    return;
   }
+
+  // Show the card and loading state (old interface)
+  followupCard.classList.remove("d-none");
+  followupLoading.classList.remove("d-none");
+  followupContainer.innerHTML = "";
+
+  const tools = [
+    {
+      type: "function",
+      function: {
+        name: "generate_followup_questions",
+        parameters: {
+          type: "object",
+          properties: {
+            questions: {
+              type: "array",
+              items: { type: "string" },
+              description: "Array of 3-4 contextual follow-up questions"
+            },
+            reasoning: { type: "string", description: "Why these questions are relevant" }
+          },
+          required: ["questions", "reasoning"]
+        }
+      }
+    }
+  ];
+
+  const followupPrompt = `
+You are an expert policy analyst helping government officials explore healthcare data. 
+Based on the user's question and the analysis provided, generate 3-4 highly relevant follow-up questions that would naturally extend the conversation and provide additional insights.
+
+Guidelines for follow-up questions:
+1. Build on the current analysis to explore deeper insights
+2. Focus on actionable policy implications  
+3. Suggest comparative analysis with other regions/metrics
+4. Explore root causes or intervention strategies
+5. Be specific and data-driven
+6. Use clear, professional language suitable for government officials
+
+Original Question: "${userQuestion}"
+Analysis Provided: "${assistantResponse.substring(0, 1000)}..."
+
+Available data includes: maternal mortality rates, anemia prevalence, iron-folic acid consumption, healthcare facility utilization, and district-level health indicators.
+
+Generate questions that would help the official make informed policy decisions or understand the data more comprehensively.
+`;
+
+  const response = await fetch(`${state.llmConfig.baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${state.llmConfig.apiKey}`,
+    },
+    body: JSON.stringify({
+      messages: [{ role: "user", content: followupPrompt }],
+      tools,
+      tool_choice: { type: "function", function: { name: "generate_followup_questions" } },
+      model: "gpt-4.1-mini",
+    }),
+  });
+
+  const result = await response.json();
+  const followupData = JSON.parse(result.choices[0].message.tool_calls[0].function.arguments);
+  
+  // Hide loading and display questions (old interface only)
+  if (followupLoading) followupLoading.classList.add("d-none");
+  displayFollowUpQuestions(followupData.questions);
 };
 
 const displayFollowUpQuestions = (questions) => {
   const container = document.getElementById("followup-questions-container");
+  
+  // Check if container exists (doesn't in new interface)
+  if (!container) {
+    return;
+  }
+  
+  // Check if html template function is available
+  if (typeof html === 'undefined') {
+    return;
+  }
   
   const questionsTemplate = html`
     ${questions.map((question, index) => html`
@@ -299,9 +371,11 @@ const handleFollowUpClick = (question) => {
 const loadFiles = async () => {
   const filesStatus = document.getElementById("files-status");
   
-  // Set loading state
-  filesStatus.textContent = "Loading...";
-  filesStatus.className = "badge bg-warning";
+  // Set loading state (check if element exists for new interface compatibility)
+  if (filesStatus) {
+    filesStatus.textContent = "Loading...";
+    filesStatus.className = "badge bg-warning";
+  }
   
   try {
     state.prompts = await (await fetch("prompts.txt")).text();
@@ -310,13 +384,17 @@ const loadFiles = async () => {
     // Load and store original prompts for modification
     await loadOriginalPrompts();
 
-    // Set success state
-    filesStatus.textContent = "Ready";
-    filesStatus.className = "badge bg-success";
+    // Set success state (check if element exists)
+    if (filesStatus) {
+      filesStatus.textContent = "Ready";
+      filesStatus.className = "badge bg-success";
+    }
   } catch (error) {
-    // Set error state
-    filesStatus.textContent = "Error";
-    filesStatus.className = "badge bg-danger";
+    // Set error state (check if element exists)
+    if (filesStatus) {
+      filesStatus.textContent = "Error";
+      filesStatus.className = "badge bg-danger";
+    }
     console.error("Failed to load files:", error);
   }
   
@@ -455,6 +533,9 @@ const processWithLLM = async (question, decision) => {
   const promptContent = addConfigToPrompt(originalPromptContent, state.config);
   const fileContents = [];
 
+  // Show loading indicator for file processing
+  showFileProcessingIndicator();
+
   for (const file of decision.chosen_files) {
     let content;
     if (file.toLowerCase().endsWith(".pdf")) {
@@ -467,8 +548,28 @@ const processWithLLM = async (question, decision) => {
     fileContents.push(`--- ${file} ---\n${content}`);
   }
 
-  const messageDiv = addMessage("assistant", "");
-  const contentDiv = messageDiv.querySelector(".message-content");
+  // Hide file processing indicator
+  hideFileProcessingIndicator();
+
+  // For new interface, addMessage handles AI responses differently
+  let messageDiv, contentDiv, streamingMessageId;
+  
+  if (typeof window.addAIMessage === 'function') {
+    // Start with empty message that will be updated
+    contentDiv = { textContent: "" };
+    
+    // Create a mock messageDiv for compatibility
+    messageDiv = {
+      querySelector: () => contentDiv
+    };
+    
+    // Create streaming message for new interface
+    streamingMessageId = createStreamingMessage();
+  } else {
+    // Use the old interface
+    messageDiv = addMessage("assistant", "");
+    contentDiv = messageDiv.querySelector(".message-content");
+  }
 
   // Build conversation context for system message
   let conversationContext = "";
@@ -498,6 +599,9 @@ const processWithLLM = async (question, decision) => {
 
   const chatMessages = [systemMessage, { role: "user", content: question }];
 
+  // Show streaming indicator
+  showStreamingIndicator();
+
   const stream = asyncLLM(`${state.llmConfig.baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
@@ -512,12 +616,35 @@ const processWithLLM = async (question, decision) => {
   });
 
   let assistantResponse = "";
+  let isFirstChunk = true;
 
   for await (const { content } of stream) {
     if (content) {
       assistantResponse = content;
-      contentDiv.innerHTML = marked.parse(content);
+      
+      // Handle new interface vs old interface
+      if (typeof window.addAIMessage === 'function') {
+        // Update streaming message in new interface
+        updateStreamingMessage(streamingMessageId, content, isFirstChunk);
+      } else {
+        // Old interface - update the content div with streaming effect
+        contentDiv.innerHTML = marked.parse(content) + '<span class="streaming-cursor"></span>';
+      }
+      
+      isFirstChunk = false;
     }
+  }
+  
+  // Hide streaming indicator
+  hideStreamingIndicator();
+  
+  // Remove streaming cursor and finalize message
+  if (typeof window.addAIMessage === 'function') {
+    finalizeStreamingMessage(streamingMessageId, assistantResponse);
+  } else {
+    // Remove streaming cursor from old interface
+    const cursor = contentDiv.querySelector('.streaming-cursor');
+    if (cursor) cursor.remove();
   }
 
   state.messages.push({ role: "assistant", content: assistantResponse });
@@ -532,7 +659,16 @@ const processWithLLM = async (question, decision) => {
 };
 
 const addMessage = (sender, content) => {
+  // Check if we're using the new interface
+  if (typeof window.addAIMessage === 'function' && sender === 'ai') {
+    window.addAIMessage(content, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    return;
+  }
+  
   const container = document.getElementById("chat-messages");
+  
+  // Fallback for old interface
+  if (!container) return;
 
   // Clear the empty state if it exists
   const emptyState = container.querySelector(".card-body");
@@ -676,13 +812,22 @@ const showCopyError = (button) => {
 };
 
 const showLoading = (show) => {
+  // Check if we're using the new interface
+  if (typeof window.setLoadingState === 'function') {
+    window.setLoadingState(show);
+    return;
+  }
+  
+  // Fallback for old interface
   const sendText = document.getElementById("send-text");
   const loadingSpinner = document.getElementById("loading-spinner");
   const sendBtn = document.getElementById("send-btn");
   
+  if (!sendBtn) return;
+  
   // Use modern toggle methods for cleaner code
-  sendText.classList.toggle("d-none", show);
-  loadingSpinner.classList.toggle("d-none", !show);
+  if (sendText) sendText.classList.toggle("d-none", show);
+  if (loadingSpinner) loadingSpinner.classList.toggle("d-none", !show);
   sendBtn.disabled = show;
   
   // Update button text for professional context
@@ -690,6 +835,91 @@ const showLoading = (show) => {
     sendText.textContent = "Analyzing...";
   } else {
     sendText.textContent = "Analyze";
+  }
+};
+
+// New loading indicator functions
+const showFileProcessingIndicator = () => {
+  if (typeof window.showFileProcessing === 'function') {
+    window.showFileProcessing();
+  } else {
+    // Fallback for old interface
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.id = 'file-processing-indicator';
+    loadingIndicator.innerHTML = `
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Processing data files...</div>
+    `;
+    
+    const chatArea = document.getElementById('chat-area');
+    if (chatArea) {
+      chatArea.appendChild(loadingIndicator);
+    }
+  }
+};
+
+const hideFileProcessingIndicator = () => {
+  if (typeof window.hideFileProcessing === 'function') {
+    window.hideFileProcessing();
+  } else {
+    // Fallback for old interface
+    const indicator = document.getElementById('file-processing-indicator');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+};
+
+const showStreamingIndicator = () => {
+  if (typeof window.showStreaming === 'function') {
+    window.showStreaming();
+  } else {
+    // Fallback for old interface
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-indicator';
+    loadingIndicator.id = 'streaming-indicator';
+    loadingIndicator.innerHTML = `
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Generating response...</div>
+    `;
+    
+    const chatArea = document.getElementById('chat-area');
+    if (chatArea) {
+      chatArea.appendChild(loadingIndicator);
+    }
+  }
+};
+
+const hideStreamingIndicator = () => {
+  if (typeof window.hideStreaming === 'function') {
+    window.hideStreaming();
+  } else {
+    // Fallback for old interface
+    const indicator = document.getElementById('streaming-indicator');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+};
+
+// Streaming message functions for new interface
+const createStreamingMessage = () => {
+  if (typeof window.createStreamingMessage === 'function') {
+    return window.createStreamingMessage();
+  }
+  return null;
+};
+
+const updateStreamingMessage = (messageId, content, isFirstChunk) => {
+  if (typeof window.updateStreamingMessage === 'function') {
+    window.updateStreamingMessage(messageId, content, isFirstChunk);
+  }
+};
+
+const finalizeStreamingMessage = (messageId, finalContent) => {
+  if (typeof window.finalizeStreamingMessage === 'function') {
+    window.finalizeStreamingMessage(messageId, finalContent);
   }
 };
 
@@ -802,3 +1032,40 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFiles();
   checkExistingConfig();
 });
+
+// Expose functions for the new interface
+window.handleUserQuestion = async (question, format, language) => {
+  // Set the format and language
+  const formatSelect = document.getElementById("format-select");
+  const languageSelect = document.getElementById("language-select");
+  
+  if (formatSelect) {
+    // Update the display value in the new interface
+    const formatValue = document.getElementById("format-value");
+    if (formatValue) formatValue.textContent = format;
+  }
+  
+  if (languageSelect) {
+    // Update the display value in the new interface  
+    const languageValue = document.getElementById("language-value");
+    if (languageValue) languageValue.textContent = language;
+  }
+  
+  // Process the question
+  showLoading(true);
+  state.messages.push({ role: "user", content: question });
+  
+  const routingDecision = await routeQuestion(question);
+  await processWithLLM(question, routingDecision);
+  showLoading(false);
+};
+
+window.resetAnalysis = () => {
+  refreshChat();
+};
+
+window.initializeApp = async () => {
+  await loadFiles();
+  await checkExistingConfig();
+  return state;
+};

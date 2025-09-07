@@ -3,250 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Insights</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <title>🧠 AI Insights</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-light">
+<body>
+    <!-- Background decorative elements -->
+    <div class="bg-decoration-1"></div>
+    <div class="bg-decoration-2"></div>
+    
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom">
-        <div class="container-fluid">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-shield-check me-2 fs-4"></i>
-                <span class="navbar-brand mb-0 h5 fw-bold">AI Insights</span>
-            </div>
-            <button class="btn btn-outline-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#settingsCollapse">
-                <i class="bi bi-gear me-1"></i>Configuration
-            </button>
-        </div>
-    </nav>
-
-    <!-- Collapsible Settings Panel -->
-    <div class="collapse" id="settingsCollapse">
-        <div class="bg-white border-bottom shadow-sm">
-            <div class="container-fluid py-3">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <small class="text-muted fw-semibold">Data Sources:</small>
-                        <span class="badge bg-secondary ms-2" id="files-status">Loading...</span>
+    <div class="header"></div>
+    <div class="header-title">🧠 AI Insights</div>
+    
+    <!-- Controls -->
+    <div class="controls">
+        <div class="control-group">
+            <div class="control-item">
+                <div class="control-label">📄 Report Format</div>
+                <div class="control-select" id="format-select">
+                    <span id="format-value">Executive Summary</span>
+                    <svg class="icon" viewBox="0 0 16 16">
+                        <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
+                    </svg>
+                    <div class="dropdown-menu" id="format-dropdown">
+                        <button class="dropdown-item" data-value="Executive Summary">Executive Summary</button>
+                        <button class="dropdown-item" data-value="E-mail">E-mail</button>
+                        <button class="dropdown-item" data-value="Bullet Points">Bullet Points</button>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <button class="btn btn-primary btn-sm" id="config-llm-btn">
-                            <i class="bi bi-cpu me-1"></i>Initialize Analysis Engine
-                        </button>
-                        <div class="mt-1">
-                            <small class="text-muted" id="config-status">Click to activate analysis capabilities</small>
-                        </div>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="control-label">🌐 Language</div>
+                <div class="control-select" id="language-select">
+                    <span id="language-value">English</span>
+                    <svg class="icon" viewBox="0 0 16 16">
+                        <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
+                    </svg>
+                    <div class="dropdown-menu" id="language-dropdown">
+                        <button class="dropdown-item" data-value="English">English</button>
+                        <button class="dropdown-item" data-value="Hindi">हिंदी (Hindi)</button>
+                        <button class="dropdown-item" data-value="Marathi">मराठी (Marathi)</button>
+                        <button class="dropdown-item" data-value="Telugu">తెలుగు (Telugu)</button>
                     </div>
                 </div>
             </div>
         </div>
+        <button class="reset-btn" id="reset-btn">
+            <span>Reset</span>
+            <svg class="icon" viewBox="0 0 16 16">
+                <path d="M8 1.5C4.41602 1.5 1.5 4.41602 1.5 8C1.5 11.584 4.41602 14.5 8 14.5C11.584 14.5 14.5 11.584 14.5 8H13.5C13.5 11.043 11.043 13.5 8 13.5C4.95703 13.5 2.5 11.043 2.5 8C2.5 4.95703 4.95703 2.5 8 2.5C9.9375 2.5 11.6309 3.49219 12.6094 5H10V6H14V2H13V3.85938C11.8086 2.42188 10.0098 1.5 8 1.5Z" fill="#333333"/>
+            </svg>
+        </button>
     </div>
 
-    <div class="container-fluid py-4">
-        <div class="row">
-            <!-- Left Sidebar -->
-            <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom py-2">
-                        <h6 class="mb-0 fw-semibold text-dark">
-                            <i class="bi bi-clipboard-data me-2"></i>Analysis Templates
-                        </h6>
-                    </div>
-                    <div class="card-body py-2">
-                        <div class="d-grid gap-2" id="sample-questions">
-                            <button class="btn btn-outline-primary text-start sample-question-btn text-decoration-none py-2" data-question="Rank the top 5 and bottom 5 districts by MMR">
-                                <i class="bi bi-trophy me-2"></i>District MMR Ranking Analysis
-                            </button>
-                            <button class="btn btn-outline-primary text-start sample-question-btn text-decoration-none py-2" data-question="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
-                                <i class="bi bi-graph-up me-2"></i>Regional Anemia Comparison
-                            </button>
-                            <button class="btn btn-outline-primary text-start sample-question-btn text-decoration-none py-2" data-question="Rank the top and bottom districts by Iron-Folic Acid consumption">
-                                <i class="bi bi-capsule me-2"></i>Nutritional Supplement Analysis
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mt-3">
-                    <div class="card-header bg-white border-bottom">
-                        <h6 class="mb-0 fw-semibold text-dark">
-                            <i class="bi bi-gear me-2"></i>Output Configuration
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Report Format</label>
-                            <select class="form-select form-select-sm" id="format-select">
-                                <option value="Summary">Executive Summary</option>
-                                <option value="e-mail">E-mail</option>
-                                <option value="Bullet Points">Bullet Points</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label small fw-semibold text-muted">Language</label>
-                            <select class="form-select form-select-sm" id="language-select">
-                                <option value="English">English</option>
-                                <option value="Hindi">हिंदी (Hindi)</option>
-                                <option value="Marathi">मराठी (Marathi)</option>
-                                <option value="Telugu">తెలుగు (Telugu)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="col-lg-9">
-                <!-- Welcome/Information Section -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-shield-check text-success me-2 fs-5"></i>
-                            <h5 class="mb-0 fw-semibold text-dark">AI Insights</h5>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h6 class="fw-semibold text-dark mb-2">Comprehensive AI Insights</h6>
-                                <p class="text-muted mb-3">The system highlights how data can be queried and compared in dialogue to produce decision-ready insights.</p>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span class="badge bg-light text-dark border">Maternal Mortality Analysis</span>
-                                    <span class="badge bg-light text-dark border">Anemia Prevalence Tracking</span>
-                                    <span class="badge bg-light text-dark border">Healthcare Facility Utilization</span>
-                                    <span class="badge bg-light text-dark border">District-Level Comparisons</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-center">
-                                <div class="bg-light rounded p-3">
-                                    <i class="bi bi-graph-up text-primary fs-1 mb-2"></i>
-                                    <p class="small text-muted mb-0">Data-Driven Policy Insights</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chat Area -->
-                <div class="card border-0 shadow-sm mb-4" style="min-height: 600px;" id="chat-messages">
-                    <div class="card-header bg-white border-bottom d-none" id="chat-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0 fw-semibold text-dark">
-                                <i class="bi bi-chat-text me-2"></i>Analysis Results
-                            </h6>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <button class="btn btn-outline-secondary" id="speak-btn" title="Read aloud">
-                                    <i class="bi bi-volume-up" id="speak-icon"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary d-none" id="pause-btn" title="Pause reading">
-                                    <i class="bi bi-pause"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary d-none" id="stop-btn" title="Stop reading">
-                                    <i class="bi bi-stop"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body d-flex align-items-center justify-content-center" id="chat-body" style="overflow-y: auto; max-height: 550px;">
-                        <div class="text-center text-muted">
-                            <i class="bi bi-graph-up-arrow display-1 mb-3 opacity-25"></i>
-                            <h5 class="fw-light">Healthcare Data Analysis Ready</h5>
-                            <p class="mb-0 text-muted">Submit your query below to receive comprehensive analysis and insights</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Follow-up Questions Section -->
-                <div class="card border-0 shadow-sm mb-4 d-none" id="followup-questions-card">
-                    <div class="card-header bg-gradient" style="background: linear-gradient(45deg, #f8f9fa, #e9ecef);">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-lightbulb-fill text-warning me-2"></i>
-                            <h6 class="mb-0 fw-semibold text-dark">Suggested Follow-up Questions</h6>
-                            <small class="text-muted ms-auto">AI-generated based on your analysis</small>
-                        </div>
-                    </div>
-                    <div class="card-body py-3">
-                        <div id="followup-questions-container" class="d-grid gap-2">
-                            <!-- Follow-up questions will be dynamically inserted here -->
-                        </div>
-                        <div id="followup-loading" class="text-center text-muted d-none">
-                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                            <small>Generating personalized follow-up questions...</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search Interface -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-search text-primary me-2"></i>
-                            <h6 class="mb-0 fw-semibold text-dark">Submit Your Query</h6>
-                        </div>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="input-group input-group-lg">
-                            <input type="text" class="form-control" id="user-question" 
-                                   placeholder="Enter your healthcare data analysis question..." disabled>
-                            <button class="btn btn-outline-secondary" id="mic-btn" title="Click to speak">
-                                <i class="bi bi-mic" id="mic-icon"></i>
-                            </button>
-                            <button class="btn btn-primary px-4" id="send-btn" disabled>
-                                <span id="send-text">Analyze</span>
-                                <span id="loading-spinner" class="spinner-border spinner-border-sm d-none ms-2"></span>
-                            </button>
-                            <button class="btn btn-outline-secondary" id="reset-btn" title="Reset Analysis">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                        </div>
-                        <div class="mt-3">
-                            <small class="text-muted">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Use specific questions about districts, health indicators, or comparative analysis for best results
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
+    <!-- Main content area -->
+    <div class="main-content">
+        <!-- Welcome screen -->
+        <div class="welcome-screen" id="welcome-screen">
+            <h1 class="welcome-title">✨ AI Insights</h1>
+            <p class="welcome-subtitle">
+                Get decision-ready insights through simple dialogue, compare districts, explore health trends, and uncover patterns — all powered by AI.
+            </p>
         </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="script.js"></script>
-    <script type="module">
-        import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@3/lit-html.js';
         
-        // Modern event handling for sample questions
-        document.addEventListener('DOMContentLoaded', function() {
-            const sampleQuestionsContainer = document.getElementById('sample-questions');
+        <!-- Chat area -->
+        <div class="chat-area" id="chat-area"></div>
+    </div>
+    
+    <!-- Bottom section -->
+    <div class="bottom-section">
+        <!-- Suggestion cards -->
+        <div class="suggestions" id="suggestions">
+            <div class="suggestion-card" data-description="Rank the top 5 and bottom 5 districts by MMR">
+                <div class="suggestion-title">District MMR Ranking</div>
+                <div class="suggestion-description">Rank the top 5 and bottom 5 districts by MMR</div>
+            </div>
+            <div class="suggestion-card" data-description="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
+                <div class="suggestion-title">Regional Anemia Comparison</div>
+                <div class="suggestion-description">Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi</div>
+            </div>
+            <div class="suggestion-card" data-description="Rank the top and bottom districts by Iron-Folic Acid consumption">
+                <div class="suggestion-title">Nutritional Supplement Analysis</div>
+                <div class="suggestion-description">Rank the top and bottom districts by Iron-Folic Acid consumption</div>
+            </div>
+        </div>
+        
+        <!-- Input area -->
+        <div class="input-area">
+            <textarea 
+                class="input-textarea" 
+                id="user-question"
+                placeholder="💬 Ask your health care data analysis question..."
+                disabled
+            ></textarea>
+            <div class="input-controls">
+                <button class="mic-btn" id="mic-btn" title="Click to speak">
+                    <svg class="icon" viewBox="0 0 22 22">
+                        <path d="M8.9375 2.75C8.18555 2.75 7.5625 3.37305 7.5625 4.125V12.375C7.5625 13.127 8.18555 13.75 8.9375 13.75H13.0625C13.8145 13.75 14.4375 13.127 14.4375 12.375V4.125C14.4375 3.37305 13.8145 2.75 13.0625 2.75H8.9375ZM8.9375 4.125H13.0625V12.375H8.9375V4.125ZM4.8125 9.625V12.375C4.8125 14.6443 6.66821 16.5 8.9375 16.5H10.3125V17.875H7.5625V19.25H14.4375V17.875H11.6875V16.5H13.0625C15.3318 16.5 17.1875 14.6443 17.1875 12.375V9.625H15.8125V12.375C15.8125 13.9004 14.5879 15.125 13.0625 15.125H8.9375C7.41211 15.125 6.1875 13.9004 6.1875 12.375V9.625H4.8125Z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="send-btn" id="send-btn" disabled>
+                    <svg class="icon icon-white" viewBox="0 0 20 20">
+                        <path d="M10 2.55859L9.55078 2.98828L4.23828 8.30078L5.13672 9.19922L9.375 4.96094V17.5H10.625V4.96094L14.8633 9.19922L15.7617 8.30078L10.4492 2.98828L10 2.55859Z" fill="white"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="script.js"></script>
+    <script>
+        // Global variables for chat functionality
+        let chatStarted = false;
+        let messages = [];
+        let currentFormat = 'Executive Summary';
+        let currentLanguage = 'English';
+        
+        // Initial suggestions
+        const initialSuggestions = [
+            {
+                title: "District MMR Ranking",
+                description: "Rank the top 5 and bottom 5 districts by MMR"
+            },
+            {
+                title: "Regional Anemia Comparison", 
+                description: "Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi"
+            },
+            {
+                title: "Nutritional Supplement Analysis",
+                description: "Rank the top and bottom districts by Iron-Folic Acid consumption"
+            }
+        ];
+        
+        // Follow-up suggestions
+        const followUpSuggestions = [
+            {
+                title: "Trend Analysis",
+                description: "Show MMR trends over the past 5 years for these districts"
+            },
+            {
+                title: "Contributing Factors", 
+                description: "What factors contribute to high MMR in bottom-ranked districts?"
+            },
+            {
+                title: "Intervention Impact",
+                description: "Compare districts with recent health interventions vs control groups"
+            }
+        ];
+        
+        // DOM elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const chatArea = document.getElementById('chat-area');
+        const userQuestion = document.getElementById('user-question');
+        const sendBtn = document.getElementById('send-btn');
+        const micBtn = document.getElementById('mic-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const suggestionsContainer = document.getElementById('suggestions');
+        const inputArea = document.querySelector('.input-area');
+        
+        // Initialize the interface
+        function initializeInterface() {
+            // Enable input when script.js loads
+            if (typeof window.initializeApp === 'function') {
+                window.initializeApp().then(() => {
+                    userQuestion.disabled = false;
+                    sendBtn.disabled = false;
+                });
+            } else {
+                // Fallback: enable after a short delay
+                setTimeout(() => {
+                    userQuestion.disabled = false;
+                    sendBtn.disabled = false;
+                }, 1000);
+            }
             
-            if (sampleQuestionsContainer) {
-                sampleQuestionsContainer.addEventListener('click', function(event) {
-                    if (event.target.classList.contains('sample-question-btn')) {
-                        const question = event.target.dataset.question;
-                        const userQuestionInput = document.getElementById('user-question');
-                        const sendButton = document.getElementById('send-btn');
-                        
-                        // Fill the input field
-                        userQuestionInput.value = question;
-                        
-                        // Enable the input and send button if they're disabled
-                        if (userQuestionInput.disabled) {
-                            userQuestionInput.disabled = false;
-                        }
-                        if (sendButton.disabled) {
-                            sendButton.disabled = false;
-                        }
-                        
-                        // Trigger the send button click to auto-submit
-                        sendButton.click();
-                    }
+            setupEventListeners();
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Suggestion card clicks
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.suggestion-card')) {
+                    const card = event.target.closest('.suggestion-card');
+                    const description = card.dataset.description;
+                    handleSuggestionClick(description);
+                }
+            });
+            
+            // Dropdown functionality
+            setupDropdowns();
+            
+            // Send button click
+            sendBtn.addEventListener('click', handleSendMessage);
+            
+            // Enter key press
+            userQuestion.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', handleReset);
+            
+            // Mic button (placeholder for speech recognition)
+            micBtn.addEventListener('click', function() {
+                // This would integrate with your existing speech.js functionality
+                if (typeof window.toggleSpeechRecognition === 'function') {
+                    window.toggleSpeechRecognition();
+                }
+            });
+        }
+        
+        // Handle suggestion click
+        function handleSuggestionClick(description) {
+            // Add loading state to suggestion cards
+            const suggestionCards = document.querySelectorAll('.suggestion-card');
+            suggestionCards.forEach(card => {
+                card.classList.add('loading');
+                card.disabled = true;
+            });
+            
+            if (!chatStarted) {
+                startChat(description);
+            } else {
+                userQuestion.value = description;
+                handleSendMessage();
+            }
+        }
+        
+        // Start chat with first message
+        function startChat(message) {
+            chatStarted = true;
+            
+            // Hide welcome screen and show chat
+            welcomeScreen.classList.add('hidden');
+            chatArea.classList.add('active');
+            
+            // Add chat-active class to main-content for proper alignment
+            const mainContent = document.querySelector('.main-content');
+            mainContent.classList.add('chat-active');
+            
+            // Add user message
+            addMessage(message, true);
+            
+            // Update suggestions to follow-up
+            updateSuggestions(followUpSuggestions);
+            
+            // Send to your existing script.js logic
+            userQuestion.value = message;
+            
+            // Trigger the existing send functionality
+            if (typeof window.handleUserQuestion === 'function') {
+                window.handleUserQuestion(message, currentFormat, currentLanguage);
+            }
+        }
+        
+        // Handle send message
+        function handleSendMessage() {
+            const message = userQuestion.value.trim();
+            if (!message) return;
+            
+            if (!chatStarted) {
+                startChat(message);
+            } else {
+                addMessage(message, true);
+                
+                // Trigger existing script.js logic
+                if (typeof window.handleUserQuestion === 'function') {
+                    window.handleUserQuestion(message, currentFormat, currentLanguage);
+                }
+            }
+            
+            userQuestion.value = '';
+        }
+        
+        // Add message to chat
+        function addMessage(message, isUser, timestamp) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `chat-message ${isUser ? 'user' : 'ai'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${isUser ? 'user' : 'ai'}`;
+            
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            
+            // For AI messages, parse markdown. For user messages, use plain text
+            if (isUser) {
+                messageText.textContent = message;
+            } else {
+                messageText.innerHTML = typeof marked !== 'undefined' ? marked.parse(message) : message;
+            }
+            
+            bubble.appendChild(messageText);
+            
+            if (timestamp) {
+                const timestampElement = document.createElement('div');
+                timestampElement.className = 'message-timestamp';
+                timestampElement.textContent = timestamp;
+                bubble.appendChild(timestampElement);
+            }
+            
+            messageElement.appendChild(bubble);
+            chatArea.appendChild(messageElement);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        // Update suggestions (make it global for script.js access)
+        window.updateSuggestions = function updateSuggestions(newSuggestions) {
+            suggestionsContainer.innerHTML = '';
+            
+            newSuggestions.forEach(suggestion => {
+                const card = document.createElement('div');
+                card.className = 'suggestion-card';
+                card.dataset.description = suggestion.description;
+                
+                card.innerHTML = `
+                    <div class="suggestion-title">${suggestion.title}</div>
+                    <div class="suggestion-description">${suggestion.description}</div>
+                `;
+                
+                suggestionsContainer.appendChild(card);
+            });
+        }
+        
+        // Handle reset
+        function handleReset() {
+            chatStarted = false;
+            messages = [];
+            
+            // Show welcome screen and hide chat
+            welcomeScreen.classList.remove('hidden');
+            chatArea.classList.remove('active');
+            chatArea.innerHTML = '';
+            
+            // Remove chat-active class from main-content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.classList.remove('chat-active');
+            
+            // Reset suggestions
+            updateSuggestions(initialSuggestions);
+            
+            // Clear input
+            userQuestion.value = '';
+            
+            // Call existing reset functionality
+            if (typeof window.resetAnalysis === 'function') {
+                window.resetAnalysis();
+            }
+        }
+        
+        // Public functions for script.js integration
+        window.addAIMessage = function(message, timestamp) {
+            addMessage(message, false, timestamp);
+        };
+        
+        window.setLoadingState = function(loading) {
+            if (loading) {
+                sendBtn.classList.add('loading');
+                sendBtn.disabled = true;
+                inputArea.classList.add('loading');
+                userQuestion.disabled = true;
+            } else {
+                sendBtn.classList.remove('loading');
+                sendBtn.disabled = false;
+                inputArea.classList.remove('loading');
+                userQuestion.disabled = false;
+                
+                // Remove loading state from suggestion cards
+                const suggestionCards = document.querySelectorAll('.suggestion-card');
+                suggestionCards.forEach(card => {
+                    card.classList.remove('loading');
+                    card.disabled = false;
                 });
             }
-        });
+        };
+
+        // File processing indicators
+        window.showFileProcessing = function() {
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.id = 'file-processing-indicator';
+            loadingIndicator.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Processing data files...</div>
+            `;
+            chatArea.appendChild(loadingIndicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        };
+
+        window.hideFileProcessing = function() {
+            const indicator = document.getElementById('file-processing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        };
+
+        // Streaming indicators
+        window.showStreaming = function() {
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.id = 'streaming-indicator';
+            loadingIndicator.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Generating response...</div>
+            `;
+            chatArea.appendChild(loadingIndicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        };
+
+        window.hideStreaming = function() {
+            const indicator = document.getElementById('streaming-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        };
+
+        // Streaming message functions
+        let streamingMessageId = null;
+        let streamingMessageElement = null;
+
+        window.createStreamingMessage = function() {
+            streamingMessageId = 'streaming-' + Date.now();
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message ai streaming-message';
+            messageElement.id = streamingMessageId;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble ai';
+            
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            messageText.innerHTML = '<span class="streaming-cursor"></span>';
+            
+            bubble.appendChild(messageText);
+            messageElement.appendChild(bubble);
+            chatArea.appendChild(messageElement);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            streamingMessageElement = messageText;
+            return streamingMessageId;
+        };
+
+        window.updateStreamingMessage = function(messageId, content, isFirstChunk) {
+            if (messageId === streamingMessageId && streamingMessageElement) {
+                if (isFirstChunk) {
+                    streamingMessageElement.innerHTML = '';
+                }
+                
+                // Parse markdown and add streaming cursor
+                const parsedContent = typeof marked !== 'undefined' ? marked.parse(content) : content;
+                streamingMessageElement.innerHTML = parsedContent + '<span class="streaming-cursor"></span>';
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        };
+
+        window.finalizeStreamingMessage = function(messageId, finalContent) {
+            if (messageId === streamingMessageId && streamingMessageElement) {
+                const parsedContent = typeof marked !== 'undefined' ? marked.parse(finalContent) : finalContent;
+                streamingMessageElement.innerHTML = parsedContent;
+                
+                // Add timestamp
+                const timestamp = document.createElement('div');
+                timestamp.className = 'message-timestamp';
+                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                streamingMessageElement.parentElement.appendChild(timestamp);
+                
+                // Remove streaming class
+                const messageElement = document.getElementById(messageId);
+                if (messageElement) {
+                    messageElement.classList.remove('streaming-message');
+                }
+                
+                streamingMessageId = null;
+                streamingMessageElement = null;
+            }
+        };
+        
+        // Setup dropdown functionality
+        function setupDropdowns() {
+            const formatSelect = document.getElementById('format-select');
+            const languageSelect = document.getElementById('language-select');
+            const formatDropdown = document.getElementById('format-dropdown');
+            const languageDropdown = document.getElementById('language-dropdown');
+            
+            // Format dropdown
+            formatSelect.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Close language dropdown if open
+                languageDropdown.classList.remove('show');
+                // Toggle format dropdown
+                formatDropdown.classList.toggle('show');
+            });
+            
+            // Language dropdown
+            languageSelect.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Close format dropdown if open
+                formatDropdown.classList.remove('show');
+                // Toggle language dropdown
+                languageDropdown.classList.toggle('show');
+            });
+            
+            // Handle format selection
+            formatDropdown.addEventListener('click', function(e) {
+                if (e.target.classList.contains('dropdown-item')) {
+                    const value = e.target.dataset.value;
+                    const formatValue = document.getElementById('format-value');
+                    formatValue.textContent = value;
+                    currentFormat = value;
+                    formatDropdown.classList.remove('show');
+                }
+            });
+            
+            // Handle language selection
+            languageDropdown.addEventListener('click', function(e) {
+                if (e.target.classList.contains('dropdown-item')) {
+                    const value = e.target.dataset.value;
+                    const languageValue = document.getElementById('language-value');
+                    languageValue.textContent = value;
+                    currentLanguage = value;
+                    languageDropdown.classList.remove('show');
+                }
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                formatDropdown.classList.remove('show');
+                languageDropdown.classList.remove('show');
+            });
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeInterface);
     </script>
 </body>
 </html>
