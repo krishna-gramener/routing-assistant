@@ -16,46 +16,6 @@
     <div class="header"></div>
     <div class="header-title">🧠 AI Insights</div>
     
-    <!-- Controls -->
-    <div class="controls">
-        <div class="control-group">
-            <div class="control-item">
-                <div class="control-label">📄 Report Format</div>
-                <div class="control-select" id="format-select">
-                    <span id="format-value">Executive Summary</span>
-                    <svg class="icon" viewBox="0 0 16 16">
-                        <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
-                    </svg>
-                    <div class="dropdown-menu" id="format-dropdown">
-                        <button class="dropdown-item" data-value="Executive Summary">Executive Summary</button>
-                        <button class="dropdown-item" data-value="E-mail">E-mail</button>
-                        <button class="dropdown-item" data-value="Bullet Points">Bullet Points</button>
-                    </div>
-                </div>
-            </div>
-            <div class="control-item">
-                <div class="control-label">🌐 Language</div>
-                <div class="control-select" id="language-select">
-                    <span id="language-value">English</span>
-                    <svg class="icon" viewBox="0 0 16 16">
-                        <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
-                    </svg>
-                    <div class="dropdown-menu" id="language-dropdown">
-                        <button class="dropdown-item" data-value="English">English</button>
-                        <button class="dropdown-item" data-value="Hindi">हिंदी (Hindi)</button>
-                        <button class="dropdown-item" data-value="Marathi">मराठी (Marathi)</button>
-                        <button class="dropdown-item" data-value="Telugu">తెలుగు (Telugu)</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="reset-btn" id="reset-btn">
-            <span>Reset</span>
-            <svg class="icon" viewBox="0 0 16 16">
-                <path d="M8 1.5C4.41602 1.5 1.5 4.41602 1.5 8C1.5 11.584 4.41602 14.5 8 14.5C11.584 14.5 14.5 11.584 14.5 8H13.5C13.5 11.043 11.043 13.5 8 13.5C4.95703 13.5 2.5 11.043 2.5 8C2.5 4.95703 4.95703 2.5 8 2.5C9.9375 2.5 11.6309 3.49219 12.6094 5H10V6H14V2H13V3.85938C11.8086 2.42188 10.0098 1.5 8 1.5Z" fill="#333333"/>
-            </svg>
-        </button>
-    </div>
 
     <!-- Main content area -->
     <div class="main-content">
@@ -63,7 +23,11 @@
         <div class="welcome-screen" id="welcome-screen">
             <h1 class="welcome-title">✨ AI Insights</h1>
             <p class="welcome-subtitle">
-                Get decision-ready insights through simple dialogue, compare districts, explore health trends, and uncover patterns — all powered by AI.
+                Get decision-ready insights through simple dialogue, compare districts, explore health trends, and uncover patterns, all powered by AI.
+            </p>
+            <!-- Mute the below paragraph -->
+            <p class="welcome-subtitle-small">
+                This demo uses select NFHS-5 data across these themes: maternal services, anaemia, child nutrition, immunisation & diarrhoea care, determinants (clean fuel), cost (out-of-pocket delivery), family planning, women’s education, and NCD risks.
             </p>
         </div>
         
@@ -87,6 +51,47 @@
                 <div class="suggestion-title">Current Health Policies</div>
                 <div class="suggestion-description">What are the latest maternal health policies and initiatives in India?</div>
             </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-item">
+                    <div class="control-label">📄 Report Format</div>
+                    <div class="control-select" id="format-select">
+                        <span id="format-value">Executive Summary</span>
+                        <svg class="icon" viewBox="0 0 16 16">
+                            <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
+                        </svg>
+                        <div class="dropdown-menu" id="format-dropdown">
+                            <button class="dropdown-item" data-value="Executive Summary">Executive Summary</button>
+                            <button class="dropdown-item" data-value="E-mail">E-mail</button>
+                            <button class="dropdown-item" data-value="Bullet Points">Bullet Points</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-item">
+                    <div class="control-label">🌐 Language</div>
+                    <div class="control-select" id="language-select">
+                        <span id="language-value">English</span>
+                        <svg class="icon" viewBox="0 0 16 16">
+                            <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.5"/>
+                        </svg>
+                        <div class="dropdown-menu" id="language-dropdown">
+                            <button class="dropdown-item" data-value="English">English</button>
+                            <button class="dropdown-item" data-value="Hindi">हिंदी (Hindi)</button>
+                            <button class="dropdown-item" data-value="Marathi">मराठी (Marathi)</button>
+                            <button class="dropdown-item" data-value="Telugu">తెలుగు (Telugu)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="reset-btn" id="reset-btn">
+                <span>Reset</span>
+                <svg class="icon" viewBox="0 0 16 16">
+                    <path d="M8 1.5C4.41602 1.5 1.5 4.41602 1.5 8C1.5 11.584 4.41602 14.5 8 14.5C11.584 14.5 14.5 11.584 14.5 8H13.5C13.5 11.043 11.043 13.5 8 13.5C4.95703 13.5 2.5 11.043 2.5 8C2.5 4.95703 4.95703 2.5 8 2.5C9.9375 2.5 11.6309 3.49219 12.6094 5H10V6H14V2H13V3.85938C11.8086 2.42188 10.0098 1.5 8 1.5Z" fill="#333333"/>
+                </svg>
+            </button>
         </div>
         
         <!-- Input area -->

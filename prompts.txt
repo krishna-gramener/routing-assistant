@@ -2,3 +2,4 @@ prompts/Comparison_Questions.txt - Instructions for comparing maternal health da
 prompts/Factual_Questions.txt - Instructions for ranking districts by maternal health indicators with rank tables, detailed observations, and best practice examples.
 prompts/Top_Bottom_Questions.txt - Instructions for analyzing top and bottom performing districts/blocks in maternal health indicators with structured tables, key observations, improvement pathways, and best practice recommendations.
 prompts/Web_Search_Analysis.txt - Expert policy analyst framework for web-based research and current information synthesis, focusing on real-time healthcare policies, recent research studies, international best practices, and up-to-date statistics from authoritative sources for government healthcare decision-making.
+- If the question doesnt fit into any of the above contexts, please use free style, Best way to present. Just Do not fit into either of above 4. 

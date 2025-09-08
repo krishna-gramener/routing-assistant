@@ -60,15 +60,11 @@ body {
 
 /* ===== CONTROLS SECTION ===== */
 .controls {
-    position: absolute;
-    top: 65px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 887px;
-    max-width: calc(100% - 72px);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    margin-bottom: 16px;
     z-index: 10;
 }
 
@@ -236,8 +232,16 @@ body {
 .welcome-subtitle {
     font-size: 18px;
     color: #333333;
-    max-width: 600px;
+    max-width: 700px;
     line-height: 1.6;
+}
+.welcome-subtitle-small {
+    font-size: 14px;
+    color: #666666;
+    max-width: 700px;
+    line-height: 1.5;
+    margin-top: 16px;
+    opacity: 0.8;
 }
 
 /* ===== CHAT AREA ===== */
