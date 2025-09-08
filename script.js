@@ -118,6 +118,149 @@ const extractTextFromExcel = async (url) => {
   return fullText.trim();
 };
 
+const performWebSearch = async (question) => {
+  try {
+    console.log("🔍 Starting web search for:", question);
+    // Check if web search config is available
+    const config = window.WEB_SEARCH_CONFIG || {
+      provider: 'demo',
+      api: {},
+      searchParams: { numResults: 5 }
+    };
+    
+    // If no real API is configured, return demo response
+    if (config.provider === 'demo' || !config.api[config.provider]?.apiKey || config.api[config.provider].apiKey.includes('YOUR_')) {
+      return generateDemoWebSearchResponse(question);
+    }
+    
+    // Perform actual web search based on configured provider
+    const searchQuery = encodeURIComponent(question);
+    const apiConfig = config.api[config.provider];
+    
+    let searchUrl, headers, body;
+    
+    switch (config.provider) {
+      case 'google':
+        searchUrl = `${apiConfig.baseUrl}?key=${apiConfig.apiKey}&cx=${apiConfig.searchEngineId}&q=${searchQuery}&num=${config.searchParams.numResults}`;
+        headers = { 'Content-Type': 'application/json' };
+        break;
+        
+      case 'bing':
+        searchUrl = `${apiConfig.baseUrl}?q=${searchQuery}&count=${config.searchParams.numResults}`;
+        headers = { 'Ocp-Apim-Subscription-Key': apiConfig.apiKey };
+        break;
+        
+      case 'serpapi':
+        searchUrl = `${apiConfig.baseUrl}?api_key=${apiConfig.apiKey}&q=${searchQuery}&num=${config.searchParams.numResults}`;
+        headers = { 'Content-Type': 'application/json' };
+        break;
+        
+      default:
+        throw new Error(`Unsupported search provider: ${config.provider}`);
+    }
+    
+    // Add CORS proxy for Google Custom Search API
+    let actualUrl = searchUrl;
+    if (config.provider === 'google') {
+      // Use a CORS proxy to avoid CORS issues
+      actualUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+    }
+    
+    const response = await fetch(actualUrl, { headers });
+    
+    if (!response.ok) {
+      throw new Error(`Search API error: ${response.status} - ${response.statusText}`);
+    }
+    
+    let searchData;
+    if (config.provider === 'google') {
+      // Parse the CORS proxy response
+      const proxyData = await response.json();
+      searchData = JSON.parse(proxyData.contents);
+    } else {
+      searchData = await response.json();
+    }
+    
+    return formatSearchResults(searchData, config.provider);
+    
+  } catch (error) {
+    console.error('Web search error:', error);
+    return `=== WEB SEARCH ERROR ===\n\nUnable to perform web search: ${error.message}\n\nFalling back to demo mode. To enable real web search, configure your API keys in web-search-config.js`;
+  }
+};
+
+const generateDemoWebSearchResponse = (question) => {
+  let formattedResults = "=== WEB SEARCH RESULTS (DEMO MODE) ===\n\n";
+  formattedResults += "🔍 **Search Query:** " + question + "\n\n";
+  formattedResults += "**Note:** This is a demo response. To enable real web search:\n\n";
+  formattedResults += "1. **Choose a search API provider:**\n";
+  formattedResults += "   - Google Custom Search API (recommended)\n";
+  formattedResults += "   - Bing Search API\n";
+  formattedResults += "   - SerpAPI\n\n";
+  formattedResults += "2. **Configure your API keys in `web-search-config.js`**\n\n";
+  formattedResults += "3. **Example configuration:**\n";
+  formattedResults += "```javascript\n";
+  formattedResults += "const WEB_SEARCH_CONFIG = {\n";
+  formattedResults += "  provider: 'google',\n";
+  formattedResults += "  api: {\n";
+  formattedResults += "    google: {\n";
+  formattedResults += "      apiKey: 'YOUR_ACTUAL_API_KEY',\n";
+  formattedResults += "      searchEngineId: 'YOUR_SEARCH_ENGINE_ID'\n";
+  formattedResults += "    }\n";
+  formattedResults += "  }\n";
+  formattedResults += "};\n";
+  formattedResults += "```\n\n";
+  formattedResults += "**Sample Results (what you would get with real API):**\n\n";
+  formattedResults += "Result 1:\n";
+  formattedResults += "Title: Latest Maternal Health Policies in India 2024\n";
+  formattedResults += "URL: https://mohfw.gov.in/maternal-health-policies\n";
+  formattedResults += "Content: The Ministry of Health and Family Welfare has announced new initiatives...\n\n";
+  formattedResults += "Result 2:\n";
+  formattedResults += "Title: WHO Guidelines for Maternal Mortality Reduction\n";
+  formattedResults += "URL: https://who.int/maternal-health-guidelines\n";
+  formattedResults += "Content: Updated WHO recommendations for reducing maternal mortality rates...\n\n";
+  formattedResults += "**Benefits of Web Search Integration:**\n";
+  formattedResults += "- Access to current policy updates\n";
+  formattedResults += "- Latest research findings\n";
+  formattedResults += "- International best practices\n";
+  formattedResults += "- Real-time health statistics\n";
+  formattedResults += "- Government announcements and initiatives\n\n";
+  formattedResults += "Once configured, the system will automatically search for current information relevant to your healthcare policy questions.";
+  
+  return formattedResults;
+};
+
+const formatSearchResults = (searchData, provider) => {
+  let formattedResults = "=== WEB SEARCH RESULTS ===\n\n";
+  
+  let results = [];
+  
+  switch (provider) {
+    case 'google':
+      results = searchData.items || [];
+      break;
+    case 'bing':
+      results = searchData.webPages?.value || [];
+      break;
+    case 'serpapi':
+      results = searchData.organic_results || [];
+      break;
+  }
+  
+  if (results.length > 0) {
+    results.forEach((result, index) => {
+      formattedResults += `Result ${index + 1}:\n`;
+      formattedResults += `Title: ${result.title || 'No title'}\n`;
+      formattedResults += `URL: ${result.url || result.link || 'No URL'}\n`;
+      formattedResults += `Content: ${result.snippet || result.description || result.content || 'No content available'}\n\n`;
+    });
+  } else {
+    formattedResults += "No search results found for the query.\n";
+  }
+  
+  return formattedResults;
+};
+
 const configureLLM = async () => {
   state.llmConfig = await openaiConfig({ show: true });
   updateConfigStatus();
@@ -509,7 +652,22 @@ const routeQuestion = async (question) => {
       messages: [
         {
           role: "user",
-          content: `Analyze this policy question and select the most appropriate analysis framework and data sources.\n\nAvailable Frameworks:\n${state.prompts}\n\nData Sources:\n${state.fileList}\n\nQuestion: ${question}`,
+          content: `Analyze this policy question and select the most appropriate analysis framework and data sources.
+
+IMPORTANT ROUTING RULES:
+- For questions about CURRENT/LATEST policies, updates, or recent information → Use "web-search" ONLY (must include "web-search" in chosen_files array)
+- For questions about district rankings, comparisons, or historical data analysis → Use local data files ONLY
+- NEVER combine web-search with local data files for the same question
+- You MUST select at least one data source from the list below
+- If using Web_Search_Analysis.txt prompt, you MUST include "web-search" in chosen_files
+
+Available Frameworks:
+${state.prompts}
+
+Data Sources:
+${state.fileList}
+
+Question: ${question}`,
         },
       ],
       tools,
@@ -524,8 +682,18 @@ const routeQuestion = async (question) => {
 };
 
 const processWithLLM = async (question, decision) => {
-  // Hide technical routing details from government officials
-  // addMessage('assistant', `🔍 **Routing:** ${decision.chosen_prompt} | Files: ${decision.chosen_files.join(', ')}`);
+  // Log routing decision to console for debugging
+  console.log("🎯 ROUTING DECISION:", {
+    prompt: decision.chosen_prompt,
+    files: decision.chosen_files,
+    reasoning: decision.reasoning
+  });
+
+  // Safety check: If using Web_Search_Analysis.txt but no files selected, add web-search
+  if (decision.chosen_prompt.includes('Web_Search_Analysis.txt') && decision.chosen_files.length === 0) {
+    console.log("⚠️ AUTO-CORRECTING: Adding web-search for Web_Search_Analysis prompt");
+    decision.chosen_files = ['web-search'];
+  }
 
   const originalPromptContent =
     state.originalPrompts[decision.chosen_prompt] ||
@@ -538,11 +706,18 @@ const processWithLLM = async (question, decision) => {
 
   for (const file of decision.chosen_files) {
     let content;
-    if (file.toLowerCase().endsWith(".pdf")) {
+    if (file === "web-search") {
+      // Handle web search
+      console.log("🌐 Using WEB SEARCH for current information");
+      content = await performWebSearch(question);
+    } else if (file.toLowerCase().endsWith(".pdf")) {
+      console.log("📄 Using PDF data:", file);
       content = await extractTextFromPdf(file);
     } else if (file.toLowerCase().endsWith(".xlsx")) {
+      console.log("📊 Using Excel data:", file);
       content = await extractTextFromExcel(file);
     } else {
+      console.log("📁 Using text data:", file);
       content = await (await fetch(file)).text();
     }
     fileContents.push(`--- ${file} ---\n${content}`);
