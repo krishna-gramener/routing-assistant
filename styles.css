@@ -192,7 +192,7 @@ body {
 /* ===== MAIN CONTENT ===== */
 .main-content {
     position: absolute;
-    top: 120px;
+    top: 10px;
     bottom: 200px;
     left: 50%;
     transform: translateX(-50%);
@@ -381,7 +381,7 @@ body {
     max-width: calc(100% - 72px);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 30px;
     z-index: 5;
 }
 
@@ -493,7 +493,7 @@ body {
 
 .input-controls {
     display: flex;
-    gap: 8px;
+    gap: 30px;
     align-items: center;
     justify-content: flex-end;
 }
