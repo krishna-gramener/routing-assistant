@@ -13,8 +13,9 @@
     <div class="bg-decoration-2"></div>
     
     <!-- Header -->
-    <div class="header"></div>
-    <div class="header-title">🧠 AI Insights</div>
+    <div class="header">
+        <div class="header-title">🧠 AI Insights</div>
+    </div>
     
 
     <!-- Main content area -->
@@ -254,11 +255,17 @@
             const mainContent = document.querySelector('.main-content');
             mainContent.classList.add('chat-active');
             
+            // Also add to body for global styling
+            document.body.classList.add('chat-active');
+            
             // Add user message
             addMessage(message, true);
             
             // Update suggestions to follow-up
             updateSuggestions(followUpSuggestions);
+            
+            // Adjust chat area padding to prevent overlap
+            adjustChatPadding();
             
             // Send to your existing script.js logic
             userQuestion.value = message;
@@ -322,22 +329,72 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         }
         
+        // Adjust chat area padding to prevent overlap with bottom section
+        function adjustChatPadding() {
+            setTimeout(() => {
+                const bottomSection = document.querySelector('.bottom-section');
+                const chatArea = document.querySelector('.chat-area');
+                
+                if (bottomSection && chatArea) {
+                    const bottomSectionHeight = bottomSection.offsetHeight;
+                    const newPadding = Math.max(160, bottomSectionHeight + 20);
+                    chatArea.style.paddingBottom = newPadding + 'px';
+                }
+            }, 100);
+        }
+        
         // Update suggestions (make it global for script.js access)
         window.updateSuggestions = function updateSuggestions(newSuggestions) {
-            suggestionsContainer.innerHTML = '';
+            if (!chatStarted) {
+                // Welcome screen suggestions - use original card layout
+                suggestionsContainer.innerHTML = '';
+                newSuggestions.forEach(suggestion => {
+                    const card = document.createElement('div');
+                    card.className = 'suggestion-card';
+                    card.dataset.description = suggestion.description;
+                    
+                    card.innerHTML = `
+                        <div class="suggestion-title">${suggestion.title}</div>
+                        <div class="suggestion-description">${suggestion.description}</div>
+                    `;
+                    
+                    suggestionsContainer.appendChild(card);
+                });
+            } else {
+                // Chat active - add follow-up questions directly to chat area
+                addFollowUpQuestions(newSuggestions);
+                // Clear the bottom suggestions since they're now in chat
+                suggestionsContainer.innerHTML = '';
+            }
+        }
+        
+        // Add follow-up questions to chat area
+        function addFollowUpQuestions(suggestions) {
+            if (!suggestions || suggestions.length === 0) return;
             
-            newSuggestions.forEach(suggestion => {
-                const card = document.createElement('div');
-                card.className = 'suggestion-card';
-                card.dataset.description = suggestion.description;
+            const followUpContainer = document.createElement('div');
+            followUpContainer.className = 'chat-followup-questions';
+            
+            const title = document.createElement('div');
+            title.className = 'chat-followup-title';
+            title.textContent = 'Continue exploring';
+            followUpContainer.appendChild(title);
+            
+            suggestions.forEach(suggestion => {
+                const questionBtn = document.createElement('button');
+                questionBtn.className = 'chat-followup-question';
+                questionBtn.textContent = suggestion.description;
+                questionBtn.dataset.description = suggestion.description;
                 
-                card.innerHTML = `
-                    <div class="suggestion-title">${suggestion.title}</div>
-                    <div class="suggestion-description">${suggestion.description}</div>
-                `;
+                questionBtn.addEventListener('click', function() {
+                    handleSuggestionClick(suggestion.description);
+                });
                 
-                suggestionsContainer.appendChild(card);
+                followUpContainer.appendChild(questionBtn);
             });
+            
+            chatArea.appendChild(followUpContainer);
+            chatArea.scrollTop = chatArea.scrollHeight;
         }
         
         // Handle reset
@@ -353,6 +410,9 @@
             // Remove chat-active class from main-content
             const mainContent = document.querySelector('.main-content');
             mainContent.classList.remove('chat-active');
+            
+            // Also remove from body
+            document.body.classList.remove('chat-active');
             
             // Reset suggestions
             updateSuggestions(initialSuggestions);
