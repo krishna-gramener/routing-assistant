@@ -45,13 +45,47 @@ body {
     height: 50px;
     background: #7c70ff;
     z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.home-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+.home-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.home-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.home-btn .icon {
+    width: 18px;
+    height: 18px;
 }
 
 .header-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 13px;
     font-size: 20px;
     font-weight: 700;
     color: white;
@@ -248,8 +282,8 @@ body {
 /* ===== CHAT AREA ===== */
 .chat-area {
     margin-top: 60px;
-    padding: 16px 16px 160px 16px;
-    height: calc(100vh - 50px - 150px);
+    padding: 16px 16px 220px 16px;
+    height: calc(100vh - 50px - 180px);
     overflow-y: auto;
     width: 100%;
     align-items: stretch;
@@ -284,13 +318,13 @@ body {
 
 .chat-message.ai {
     justify-content: flex-start;
-    padding-left: 20px;
+    padding-left: 10px;
 }
 
 .message-bubble {
-    max-width: 80%;
+    max-width: 90%;
     border-radius: 16px;
-    padding: 16px 20px;
+    padding: 20px 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     position: relative;
 }
@@ -309,7 +343,9 @@ body {
 
 .message-text {
     font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.7;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
     /* white-space: pre-wrap; */
 }
 
@@ -376,30 +412,35 @@ body {
 /* ===== BOTTOM SECTION ===== */
 .bottom-section {
     position: fixed;
-    bottom: 40px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 1200px;
     max-width: calc(100% - 72px);
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
     z-index: 500;
-    background: linear-gradient(to top, rgba(255, 243, 245, 0.9) 0%, rgba(255, 243, 245, 0.6) 50%, transparent 100%);
-    padding-top: 40px;
-    margin-top: -40px;
+    background: linear-gradient(to top, rgba(255, 243, 245, 0.95) 0%, rgba(255, 243, 245, 0.8) 50%, transparent 100%);
+    padding: 20px 0;
+    border-radius: 16px 16px 0 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
 }
 
 /* Reduce gap when chat is active */
 .main-content.chat-active ~ .bottom-section {
-    gap: 16px;
-    bottom: 20px;
+    gap: 12px;
+    bottom: 10px;
+    padding: 15px 0;
 }
 
 /* Alternative: Body class approach for chat active state */
 body.chat-active .bottom-section {
-    gap: 16px;
-    bottom: 20px;
+    gap: 12px;
+    bottom: 10px;
+    padding: 15px 0;
 }
 
 /* ===== SUGGESTION CARDS (Welcome Screen) ===== */
@@ -460,8 +501,8 @@ body.chat-active .bottom-section {
     backdrop-filter: blur(15px);
     border: 1px solid rgba(124, 112, 255, 0.2);
     border-radius: 12px;
-    max-width: 80%;
-    margin-left: 20px;
+    max-width: 90%;
+    margin-left: 10px;
 }
 
 .chat-followup-title {
@@ -631,6 +672,104 @@ body.chat-active .bottom-section {
     fill: white;
 }
 
+/* ===== TABLE STYLING ===== */
+.message-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-text table th {
+    background: linear-gradient(135deg, #7c70ff, #6b5ce6);
+    color: white;
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.message-text table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.message-text table tr:nth-child(even) td {
+    background: rgba(124, 112, 255, 0.05);
+}
+
+.message-text table tr:hover td {
+    background: rgba(124, 112, 255, 0.1);
+    transition: background-color 0.2s ease;
+}
+
+.message-text table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #7c70ff;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #6b5ce6;
+}
+
+/* Enhanced table container */
+.enhanced-table-container {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.table-meta {
+    background: linear-gradient(135deg, #f8f9ff, #f0f2ff);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(124, 112, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-icon {
+    font-size: 16px;
+}
+
+.table-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7c70ff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* ===== UTILITY CLASSES ===== */
 .hidden {
     display: none !important;
@@ -766,11 +905,50 @@ body.chat-active .bottom-section {
     }
     
     .bottom-section {
-        bottom: 20px;
+        bottom: 10px;
+        padding: 10px 0;
     }
     
     .message-bubble {
-        max-width: 85%;
+        max-width: 95%;
+        padding: 16px 18px;
+    }
+    
+    .chat-area {
+        padding: 16px 8px 240px 8px;
+    }
+    
+    .home-btn {
+        left: 10px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .home-btn .icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .header-title {
+        font-size: 18px;
+    }
+    
+    /* Mobile table improvements */
+    .message-text table {
+        font-size: 12px;
+    }
+    
+    .message-text table th,
+    .message-text table td {
+        padding: 8px 12px;
+    }
+    
+    .table-responsive {
+        margin: 12px 0;
+    }
+    
+    .enhanced-table-container {
+        margin: 16px 0;
     }
 }
 

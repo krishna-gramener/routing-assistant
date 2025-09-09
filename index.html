@@ -14,6 +14,13 @@
     
     <!-- Header -->
     <div class="header">
+        <button class="home-btn" id="home-btn" title="Fresh Start - Reload Page">
+            <svg class="icon" viewBox="0 0 20 20">
+                <path d="M10 3L2 10L4 12L10 6L16 12L18 10L10 3Z" fill="white"/>
+                <path d="M4 12V17H8V13H12V17H16V12" stroke="white" stroke-width="2" fill="none"/>
+            </svg>
+            <span>Home</span>
+        </button>
         <div class="header-title">🧠 AI Insights</div>
     </div>
     
@@ -217,6 +224,13 @@
             // Reset button
             resetBtn.addEventListener('click', handleReset);
             
+            // Home button
+            const homeBtn = document.getElementById('home-btn');
+            homeBtn.addEventListener('click', function() {
+                // Refresh the entire page for a fresh start
+                window.location.reload();
+            });
+            
             // Mic button (placeholder for speech recognition)
             micBtn.addEventListener('click', function() {
                 // This would integrate with your existing speech.js functionality
@@ -337,8 +351,13 @@
                 
                 if (bottomSection && chatArea) {
                     const bottomSectionHeight = bottomSection.offsetHeight;
-                    const newPadding = Math.max(160, bottomSectionHeight + 20);
+                    const viewportHeight = window.innerHeight;
+                    const bottomSectionFromBottom = viewportHeight - bottomSection.getBoundingClientRect().top;
+                    const newPadding = Math.max(200, bottomSectionFromBottom + 40);
                     chatArea.style.paddingBottom = newPadding + 'px';
+                    
+                    // Also ensure scroll behavior works properly
+                    chatArea.scrollTop = chatArea.scrollHeight;
                 }
             }, 100);
         }
@@ -548,6 +567,13 @@
                 if (messageElement) {
                     messageElement.classList.remove('streaming-message');
                 }
+                
+                // Enhance tables if they exist
+                setTimeout(() => {
+                    if (typeof window.enhanceTablesInContent === 'function') {
+                        window.enhanceTablesInContent(finalContent);
+                    }
+                }, 150);
                 
                 streamingMessageId = null;
                 streamingMessageElement = null;

@@ -31,7 +31,7 @@ Avoid judgmental words like poor, weak, moderate, strong, better.
 
 ---
 
-3. **Key Observations (Expanded, Data + Rank + Explanation)**  
+3. **Key Observations**  
    - Provide explanatory sentences for both top and bottom districts/blocks.  
    - Example:  
      - “Lucknow: ANC 4+ visit coverage is 72% (rank 1st), indicating wide participation in antenatal care check-ups.”  
@@ -41,7 +41,7 @@ Avoid judgmental words like poor, weak, moderate, strong, better.
 
 ---
 
-4. **Improvement Pathways (Block-Level Focus for Bottom N)**  
+4. **Improvement Pathways**  
    - Identify the blocks within the **bottom-ranked districts** where the indicator values are lowest.  
    - Provide specific, targeted points.  
    - Example:  
@@ -50,7 +50,7 @@ Avoid judgmental words like poor, weak, moderate, strong, better.
 
 ---
 
-5. **Recommendations (Best Practices with Attribution)**  
+5. **Recommended Best Practices From NITI AYOG**  
    - Link bottom districts to best practices implemented in top districts.  
    - Example:  
      - “Jhansi district increased ANC coverage by introducing monthly village-level ANC camps, improving its rank within three years — **Village ANC Camp Model** ([link])”  
@@ -61,5 +61,6 @@ Avoid judgmental words like poor, weak, moderate, strong, better.
 
 This ensures every “top/bottom” question is answered as:  
 **Context Overview → Top & Bottom Table → Expanded Key Observations → Block-Level Improvement Pathways (for bottom performers) → Best Practices (from top performers).**
+
 
 Never Generate code. As You already had data, answer from it.

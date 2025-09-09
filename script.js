@@ -13,9 +13,9 @@ marked.use({
   tables: true,
   renderer: {
     table(header, body) {
-      return `<div class="table-responsive my-3">
-                <table class="table table-striped table-bordered table-hover border border-dark">
-                    <thead class="table-dark">
+      return `<div class="table-responsive">
+                <table>
+                    <thead>
                         ${header}
                     </thead>
                     <tbody>
@@ -23,6 +23,16 @@ marked.use({
                     </tbody>
                 </table>
             </div>`;
+    },
+    tablerow(content) {
+      return `<tr>${content}</tr>\n`;
+    },
+    tablecell(content, flags) {
+      const type = flags.header ? 'th' : 'td';
+      const tag = flags.align
+        ? `<${type} style="text-align: ${flags.align}">`
+        : `<${type}>`;
+      return tag + content + `</${type}>\n`;
     },
   },
 });
@@ -821,6 +831,9 @@ const processWithLLM = async (question, decision) => {
     const cursor = contentDiv.querySelector('.streaming-cursor');
     if (cursor) cursor.remove();
   }
+  
+  // Enhance any tables in the response
+  enhanceTablesInContent(assistantResponse);
 
   state.messages.push({ role: "assistant", content: assistantResponse });
 
@@ -1098,6 +1111,55 @@ const finalizeStreamingMessage = (messageId, finalContent) => {
   }
 };
 
+// Enhanced table processing function
+const enhanceTablesInContent = (content) => {
+  // Post-process the content to add interactive features to tables
+  setTimeout(() => {
+    const tables = document.querySelectorAll('.message-text table');
+    tables.forEach((table) => {
+      // Add hover effects and make tables more interactive
+      table.addEventListener('mouseenter', () => {
+        table.style.transform = 'scale(1.002)';
+        table.style.transition = 'transform 0.2s ease';
+      });
+      
+      table.addEventListener('mouseleave', () => {
+        table.style.transform = 'scale(1)';
+      });
+      
+      // Add sorting capability to table headers (simple click indicator)
+      const headers = table.querySelectorAll('th');
+      headers.forEach((header) => {
+        header.style.cursor = 'pointer';
+        header.title = 'Table data from AI analysis';
+        
+        // Add visual feedback for interactive headers
+        header.addEventListener('mouseenter', () => {
+          header.style.background = 'linear-gradient(135deg, #6b5ce6, #5a4dcf)';
+        });
+        
+        header.addEventListener('mouseleave', () => {
+          header.style.background = 'linear-gradient(135deg, #7c70ff, #6b5ce6)';
+        });
+      });
+      
+      // Wrap table in a container with metadata
+      if (!table.closest('.enhanced-table-container')) {
+        const container = document.createElement('div');
+        container.className = 'enhanced-table-container';
+        container.innerHTML = `
+          <div class="table-meta">
+            <span class="table-icon">📊</span>
+            <span class="table-label">Data Analysis Table</span>
+          </div>
+        `;
+        table.parentNode.insertBefore(container, table);
+        container.appendChild(table);
+      }
+    });
+  }, 100);
+};
+
 const updateConfig = (type, value) => {
   state.config[type] = value;
   updateAllPrompts();
@@ -1244,3 +1306,6 @@ window.initializeApp = async () => {
   await checkExistingConfig();
   return state;
 };
+
+// Expose table enhancement function globally
+window.enhanceTablesInContent = enhanceTablesInContent;
