@@ -201,6 +201,13 @@ const performWebSearch = async (question) => {
 
 const generateDemoWebSearchResponse = (question) => {
   let formattedResults = "=== WEB SEARCH RESULTS (DEMO MODE) ===\n\n";
+  
+  // Add disclaimer for demo mode
+  formattedResults += "⚠️ **DISCLAIMER: DEMO WEB SEARCH INFORMATION**\n";
+  formattedResults += "This is a demonstration of how web search results would appear with proper citations and disclaimers. ";
+  formattedResults += "Real web search results should always be verified independently before making policy decisions.\n\n";
+  formattedResults += "---\n\n";
+  
   formattedResults += "🔍 **Search Query:** " + question + "\n\n";
   formattedResults += "**Note:** This is a demo response. To enable real web search:\n\n";
   formattedResults += "1. **Choose a search API provider:**\n";
@@ -220,28 +227,53 @@ const generateDemoWebSearchResponse = (question) => {
   formattedResults += "  }\n";
   formattedResults += "};\n";
   formattedResults += "```\n\n";
-  formattedResults += "**Sample Results (what you would get with real API):**\n\n";
-  formattedResults += "Result 1:\n";
-  formattedResults += "Title: Latest Maternal Health Policies in India 2024\n";
-  formattedResults += "URL: https://mohfw.gov.in/maternal-health-policies\n";
-  formattedResults += "Content: The Ministry of Health and Family Welfare has announced new initiatives...\n\n";
-  formattedResults += "Result 2:\n";
-  formattedResults += "Title: WHO Guidelines for Maternal Mortality Reduction\n";
-  formattedResults += "URL: https://who.int/maternal-health-guidelines\n";
-  formattedResults += "Content: Updated WHO recommendations for reducing maternal mortality rates...\n\n";
-  formattedResults += "**Benefits of Web Search Integration:**\n";
-  formattedResults += "- Access to current policy updates\n";
-  formattedResults += "- Latest research findings\n";
-  formattedResults += "- International best practices\n";
-  formattedResults += "- Real-time health statistics\n";
-  formattedResults += "- Government announcements and initiatives\n\n";
-  formattedResults += "Once configured, the system will automatically search for current information relevant to your healthcare policy questions.";
+  formattedResults += "**Sample Results (with citations - what you would get with real API):**\n\n";
+  
+  // Show example with proper citation format
+  formattedResults += "**Source 1: mohfw.gov.in**\n";
+  formattedResults += "📰 **Title:** Latest Maternal Health Policies in India 2024\n";
+  formattedResults += "🔗 **Citation:** [mohfw.gov.in](https://mohfw.gov.in/maternal-health-policies)\n";
+  formattedResults += "📅 **Retrieved:** " + new Date().toLocaleDateString() + "\n";
+  formattedResults += "📄 **Content:** The Ministry of Health and Family Welfare has announced new initiatives...\n";
+  formattedResults += "\n**Full URL for verification:** https://mohfw.gov.in/maternal-health-policies\n\n";
+  formattedResults += "---\n\n";
+  
+  formattedResults += "**Source 2: who.int**\n";
+  formattedResults += "📰 **Title:** WHO Guidelines for Maternal Mortality Reduction\n";
+  formattedResults += "🔗 **Citation:** [who.int](https://who.int/maternal-health-guidelines)\n";
+  formattedResults += "📅 **Retrieved:** " + new Date().toLocaleDateString() + "\n";
+  formattedResults += "📄 **Content:** Updated WHO recommendations for reducing maternal mortality rates...\n";
+  formattedResults += "\n**Full URL for verification:** https://who.int/maternal-health-guidelines\n\n";
+  formattedResults += "---\n\n";
+  
+  // Add citation summary example
+  formattedResults += "\n### SOURCES CITED:\n";
+  formattedResults += "[1] mohfw.gov.in - https://mohfw.gov.in/maternal-health-policies\n";
+  formattedResults += "[2] who.int - https://who.int/maternal-health-guidelines\n\n";
+  
+  formattedResults += "**Benefits of Web Search Integration with Citations:**\n";
+  formattedResults += "- Access to current policy updates with source verification\n";
+  formattedResults += "- Latest research findings with proper attribution\n";
+  formattedResults += "- International best practices with clickable citations\n";
+  formattedResults += "- Real-time health statistics with source transparency\n";
+  formattedResults += "- Government announcements with verification links\n";
+  formattedResults += "- Built-in disclaimers for information reliability\n\n";
+  
+  formattedResults += "**VERIFICATION REMINDER:** Always verify web search information with official sources before using for policy decisions.\n\n";
+  formattedResults += "Once configured, the system will automatically search for current information with proper citations and disclaimers.";
   
   return formattedResults;
 };
 
 const formatSearchResults = (searchData, provider) => {
   let formattedResults = "=== WEB SEARCH RESULTS ===\n\n";
+  
+  // Add disclaimer at the top
+  formattedResults += "⚠️ **DISCLAIMER: WEB SEARCH INFORMATION**\n";
+  formattedResults += "The following information is sourced from web search results and should be verified independently. ";
+  formattedResults += "This data may not be current, complete, or accurate. Please cross-reference with official government sources ";
+  formattedResults += "and authoritative healthcare organizations before making policy decisions.\n\n";
+  formattedResults += "---\n\n";
   
   let results = [];
   
@@ -259,16 +291,43 @@ const formatSearchResults = (searchData, provider) => {
   
   if (results.length > 0) {
     results.forEach((result, index) => {
-      formattedResults += `Result ${index + 1}:\n`;
-      formattedResults += `Title: ${result.title || 'No title'}\n`;
-      formattedResults += `URL: ${result.url || result.link || 'No URL'}\n`;
-      formattedResults += `Content: ${result.snippet || result.description || result.content || 'No content available'}\n\n`;
+      const sourceUrl = result.url || result.link || 'No URL available';
+      const sourceDomain = sourceUrl !== 'No URL available' ? extractDomain(sourceUrl) : 'Unknown source';
+      
+      formattedResults += `**Source ${index + 1}: ${sourceDomain}**\n`;
+      formattedResults += `📰 **Title:** ${result.title || 'No title'}\n`;
+      formattedResults += `🔗 **Citation:** [${sourceDomain}](${sourceUrl})\n`;
+      formattedResults += `📅 **Retrieved:** ${new Date().toLocaleDateString()}\n`;
+      formattedResults += `📄 **Content:** ${result.snippet || result.description || result.content || 'No content available'}\n`;
+      formattedResults += `\n**Full URL for verification:** ${sourceUrl}\n\n`;
+      formattedResults += "---\n\n";
     });
+    
+    // Add citation summary
+    formattedResults += "\n### SOURCES CITED:\n";
+    results.forEach((result, index) => {
+      const sourceUrl = result.url || result.link || 'No URL available';
+      const sourceDomain = sourceUrl !== 'No URL available' ? extractDomain(sourceUrl) : 'Unknown source';
+      formattedResults += `[${index + 1}] ${sourceDomain} - ${sourceUrl}\n`;
+    });
+    
+    formattedResults += "\n**VERIFICATION REMINDER:** Always verify web search information with official sources before using for policy decisions.\n";
   } else {
     formattedResults += "No search results found for the query.\n";
+    formattedResults += "\n**Note:** No citations available as no results were returned.\n";
   }
   
   return formattedResults;
+};
+
+// Helper function to extract domain from URL
+const extractDomain = (url) => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (error) {
+    return url.split('/')[2] || url;
+  }
 };
 
 const configureLLM = async () => {
