@@ -607,6 +607,7 @@
             
             // Handle format selection
             formatDropdown.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent event bubbling
                 if (e.target.classList.contains('dropdown-item')) {
                     const value = e.target.dataset.value;
                     const formatValue = document.getElementById('format-value');
@@ -618,6 +619,7 @@
             
             // Handle language selection
             languageDropdown.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent event bubbling
                 if (e.target.classList.contains('dropdown-item')) {
                     const value = e.target.dataset.value;
                     const languageValue = document.getElementById('language-value');
