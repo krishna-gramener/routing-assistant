@@ -776,17 +776,21 @@ const processWithLLM = async (question, decision) => {
   for (const file of decision.chosen_files) {
     let content;
     if (file === "web-search") {
-      // Handle web search
+      // Handle web search - update indicator text
       console.log("🌐 Using WEB SEARCH for current information");
+      updateFileProcessingIndicator("🔍 Searching the web for current information...");
       content = await performWebSearch(question);
     } else if (file.toLowerCase().endsWith(".pdf")) {
       console.log("📄 Using PDF data:", file);
+      updateFileProcessingIndicator("📄 Processing PDF document...");
       content = await extractTextFromPdf(file);
     } else if (file.toLowerCase().endsWith(".xlsx")) {
       console.log("📊 Using Excel data:", file);
+      updateFileProcessingIndicator("📊 Processing Excel data...");
       content = await extractTextFromExcel(file);
     } else {
       console.log("📁 Using text data:", file);
+      updateFileProcessingIndicator("📁 Loading data files...");
       content = await (await fetch(file)).text();
     }
     fileContents.push(`--- ${file} ---\n${content}`);
@@ -807,8 +811,8 @@ const processWithLLM = async (question, decision) => {
       querySelector: () => contentDiv
     };
     
-    // Create streaming message for new interface
-    streamingMessageId = createStreamingMessage();
+    // Don't create streaming message - we'll use the loading indicator instead
+    streamingMessageId = null;
   } else {
     // Use the old interface
     messageDiv = addMessage("assistant", "");
@@ -868,8 +872,8 @@ const processWithLLM = async (question, decision) => {
       
       // Handle new interface vs old interface
       if (typeof window.addAIMessage === 'function') {
-        // Update streaming message in new interface
-        updateStreamingMessage(streamingMessageId, content, isFirstChunk);
+        // For new interface, we'll add the message after streaming is complete
+        // No need to update during streaming since we're using the loading indicator
       } else {
         // Old interface - update the content div with streaming effect
         contentDiv.innerHTML = marked.parse(content) + '<span class="streaming-cursor"></span>';
@@ -882,9 +886,9 @@ const processWithLLM = async (question, decision) => {
   // Hide streaming indicator
   hideStreamingIndicator();
   
-  // Remove streaming cursor and finalize message
+  // Add the final message to the new interface
   if (typeof window.addAIMessage === 'function') {
-    finalizeStreamingMessage(streamingMessageId, assistantResponse);
+    window.addAIMessage(assistantResponse, new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   } else {
     // Remove streaming cursor from old interface
     const cursor = contentDiv.querySelector('.streaming-cursor');
@@ -1118,6 +1122,21 @@ const hideFileProcessingIndicator = () => {
   }
 };
 
+const updateFileProcessingIndicator = (text) => {
+  if (typeof window.updateFileProcessing === 'function') {
+    window.updateFileProcessing(text);
+  } else {
+    // Fallback for old interface
+    const indicator = document.getElementById('file-processing-indicator');
+    if (indicator) {
+      const textElement = indicator.querySelector('.loading-text');
+      if (textElement) {
+        textElement.textContent = text;
+      }
+    }
+  }
+};
+
 const showStreamingIndicator = () => {
   if (typeof window.showStreaming === 'function') {
     window.showStreaming();
@@ -1150,25 +1169,7 @@ const hideStreamingIndicator = () => {
   }
 };
 
-// Streaming message functions for new interface
-const createStreamingMessage = () => {
-  if (typeof window.createStreamingMessage === 'function') {
-    return window.createStreamingMessage();
-  }
-  return null;
-};
-
-const updateStreamingMessage = (messageId, content, isFirstChunk) => {
-  if (typeof window.updateStreamingMessage === 'function') {
-    window.updateStreamingMessage(messageId, content, isFirstChunk);
-  }
-};
-
-const finalizeStreamingMessage = (messageId, finalContent) => {
-  if (typeof window.finalizeStreamingMessage === 'function') {
-    window.finalizeStreamingMessage(messageId, finalContent);
-  }
-};
+// Streaming message functions removed - using loading indicator instead
 
 // Enhanced table processing function
 const enhanceTablesInContent = (content) => {

@@ -359,15 +359,16 @@ body {
 .loading-indicator {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.6);
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(124, 112, 255, 0.2);
     border-radius: 16px;
-    max-width: 200px;
+    max-width: 280px;
     margin: 16px 0 16px 20px;
     animation: messageSlideIn 0.3s ease;
+    box-shadow: 0 2px 12px rgba(124, 112, 255, 0.1);
 }
 
 .loading-spinner {
@@ -386,8 +387,9 @@ body {
 
 .loading-text {
     font-size: 14px;
-    color: #666;
-    font-style: italic;
+    color: #7c70ff;
+    font-weight: 500;
+    font-style: normal;
 }
 
 /* ===== STREAMING MESSAGE ===== */
@@ -421,12 +423,7 @@ body {
     flex-direction: column;
     gap: 20px;
     z-index: 500;
-    background: linear-gradient(to top, rgba(255, 243, 245, 0.95) 0%, rgba(255, 243, 245, 0.8) 50%, transparent 100%);
     padding: 20px 0;
-    border-radius: 16px 16px 0 0;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: none;
 }
 
 /* Reduce gap when chat is active */

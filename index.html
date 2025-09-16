@@ -491,6 +491,16 @@
             }
         };
 
+        window.updateFileProcessing = function(text) {
+            const indicator = document.getElementById('file-processing-indicator');
+            if (indicator) {
+                const textElement = indicator.querySelector('.loading-text');
+                if (textElement) {
+                    textElement.textContent = text;
+                }
+            }
+        };
+
         // Streaming indicators
         window.showStreaming = function() {
             const loadingIndicator = document.createElement('div');
@@ -511,74 +521,7 @@
             }
         };
 
-        // Streaming message functions
-        let streamingMessageId = null;
-        let streamingMessageElement = null;
-
-        window.createStreamingMessage = function() {
-            streamingMessageId = 'streaming-' + Date.now();
-            
-            const messageElement = document.createElement('div');
-            messageElement.className = 'chat-message ai streaming-message';
-            messageElement.id = streamingMessageId;
-            
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble ai';
-            
-            const messageText = document.createElement('div');
-            messageText.className = 'message-text';
-            messageText.innerHTML = '<span class="streaming-cursor"></span>';
-            
-            bubble.appendChild(messageText);
-            messageElement.appendChild(bubble);
-            chatArea.appendChild(messageElement);
-            chatArea.scrollTop = chatArea.scrollHeight;
-            
-            streamingMessageElement = messageText;
-            return streamingMessageId;
-        };
-
-        window.updateStreamingMessage = function(messageId, content, isFirstChunk) {
-            if (messageId === streamingMessageId && streamingMessageElement) {
-                if (isFirstChunk) {
-                    streamingMessageElement.innerHTML = '';
-                }
-                
-                // Parse markdown and add streaming cursor
-                const parsedContent = typeof marked !== 'undefined' ? marked.parse(content) : content;
-                streamingMessageElement.innerHTML = parsedContent + '<span class="streaming-cursor"></span>';
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }
-        };
-
-        window.finalizeStreamingMessage = function(messageId, finalContent) {
-            if (messageId === streamingMessageId && streamingMessageElement) {
-                const parsedContent = typeof marked !== 'undefined' ? marked.parse(finalContent) : finalContent;
-                streamingMessageElement.innerHTML = parsedContent;
-                
-                // Add timestamp
-                const timestamp = document.createElement('div');
-                timestamp.className = 'message-timestamp';
-                timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                streamingMessageElement.parentElement.appendChild(timestamp);
-                
-                // Remove streaming class
-                const messageElement = document.getElementById(messageId);
-                if (messageElement) {
-                    messageElement.classList.remove('streaming-message');
-                }
-                
-                // Enhance tables if they exist
-                setTimeout(() => {
-                    if (typeof window.enhanceTablesInContent === 'function') {
-                        window.enhanceTablesInContent(finalContent);
-                    }
-                }, 150);
-                
-                streamingMessageId = null;
-                streamingMessageElement = null;
-            }
-        };
+        // Streaming message functions removed - using loading indicator instead
         
         // Setup dropdown functionality
         function setupDropdowns() {
