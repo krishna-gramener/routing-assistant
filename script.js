@@ -624,7 +624,7 @@ const loadOriginalPrompts = async () => {
     if (fileMatches) {
       const promptFiles = fileMatches.map((match) => {
         const filename = match.match(/href="([^"]+)"/)[1];
-        return `prompts/${filename}`;
+        return filename;
       });
 
       // Load each prompt file

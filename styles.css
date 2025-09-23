@@ -11,6 +11,8 @@ body {
     height: 100vh;
     overflow: hidden;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ===== BACKGROUND DECORATIONS ===== */
@@ -99,8 +101,9 @@ body {
     justify-content: flex-start;
     gap: 24px;
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     z-index: 10;
+    padding: 0 4px;
 }
 
 .control-group {
@@ -235,9 +238,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 50px - 200px);
+    justify-content: flex-start;
+    flex: 1;
     padding-top: 50px;
+    overflow: hidden;
 }
 
 .main-content.chat-active {
@@ -282,16 +286,18 @@ body {
 /* ===== CHAT AREA ===== */
 .chat-area {
     margin-top: 60px;
-    padding: 16px 16px 220px 16px;
-    height: calc(100vh - 50px - 180px);
+    padding: 16px;
+    flex: 1;
     overflow-y: auto;
     width: 100%;
     align-items: stretch;
     display: none;
+    margin-bottom: 0;
 }
 
 .chat-area.active {
     display: block;
+    margin-bottom: 0;
 }
 
 .chat-message {
@@ -413,31 +419,33 @@ body {
 
 /* ===== BOTTOM SECTION ===== */
 .bottom-section {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1200px;
-    max-width: calc(100% - 72px);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 6px;
     z-index: 500;
-    padding: 20px 0;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid #7c70ff;
 }
 
 /* Reduce gap when chat is active */
 .main-content.chat-active ~ .bottom-section {
-    gap: 12px;
-    bottom: 10px;
-    padding: 15px 0;
+    gap: 10px;
+    bottom: 12px;
+    padding: 12px 0;
 }
 
 /* Alternative: Body class approach for chat active state */
 body.chat-active .bottom-section {
-    gap: 12px;
-    bottom: 10px;
-    padding: 15px 0;
+    gap: 10px;
+    bottom: 12px;
+    padding: 12px 0;
 }
 
 /* ===== SUGGESTION CARDS (Welcome Screen) ===== */
@@ -554,16 +562,17 @@ body.chat-active .bottom-section {
 
 /* ===== INPUT AREA ===== */
 .input-area {
-    background: rgba(242, 242, 242, 0.9);
+    background: rgba(242, 242, 242, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(0, 0, 0, 0.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     padding: 12px 16px;
     display: flex;
     flex-direction: column;
     height: 93px;
     transition: all 0.2s ease;
+    margin-top: 10px;
 }
 
 .input-area.loading {
@@ -902,8 +911,8 @@ body.chat-active .bottom-section {
     }
     
     .bottom-section {
-        bottom: 10px;
-        padding: 10px 0;
+        padding: 10px;
+        max-width: 100%;
     }
     
     .message-bubble {
@@ -912,7 +921,9 @@ body.chat-active .bottom-section {
     }
     
     .chat-area {
-        padding: 16px 8px 240px 8px;
+        padding: 16px 8px;
+        flex: 1;
+        margin-top: 50px;
     }
     
     .home-btn {
