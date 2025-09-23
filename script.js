@@ -1289,27 +1289,21 @@ const initializeEventListeners = () => {
     controlsPanel: document.getElementById("controls-panel")
   };
 
-  // Get the controls header element
-  const controlsHeader = document.querySelector(".controls-header");
+  // Get the settings button in the header
+  const settingsBtn = document.getElementById("settings-btn");
   
-  // Controls toggle functionality - make entire header clickable
+  // Controls toggle functionality
   const toggleControls = () => {
     elements.controlsPanel?.classList.toggle("show");
-    elements.controlsToggle?.classList.toggle("active");
+    settingsBtn?.classList.toggle("active");
   };
   
-  // Add click event to both the toggle button and the header div
-  elements.controlsToggle?.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent double triggering
-    toggleControls();
-  });
+  // Add click event to the settings button in the header
+  settingsBtn?.addEventListener("click", toggleControls);
   
-  // Make the entire header div clickable
-  controlsHeader?.addEventListener("click", toggleControls);
-  
-  // Initialize controls to be visible by default
-  if (elements.controlsPanel && !elements.controlsPanel.classList.contains("show")) {
-    elements.controlsPanel.classList.add("show");
+  // Initialize controls to be hidden by default
+  if (elements.controlsPanel && elements.controlsPanel.classList.contains("show")) {
+    elements.controlsPanel.classList.remove("show");
   }
 
   // Configuration button

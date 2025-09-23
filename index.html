@@ -22,6 +22,12 @@
             <span>Home</span>
         </button>
         <div class="header-title">🧠 AI Insights</div>
+        <button class="settings-btn" id="settings-btn" title="Toggle Settings">
+            <svg class="icon" viewBox="0 0 20 20">
+                <path d="M10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13Z" fill="white"/>
+                <path d="M10 2C10.5523 2 11 2.44772 11 3V3.757C11.6949 3.96904 12.3466 4.29088 12.9281 4.70701L13.5 4.13604C13.8905 3.74551 14.5237 3.74551 14.9142 4.13604L16.364 5.58579C16.7545 5.97631 16.7545 6.60948 16.364 7L15.793 7.57097C16.2091 8.15248 16.531 8.80511 16.743 9.5H17.5C18.0523 9.5 18.5 9.94772 18.5 10.5V12.5C18.5 13.0523 18.0523 13.5 17.5 13.5H16.743C16.531 14.1949 16.2091 14.8475 15.793 15.429L16.364 16C16.7545 16.3905 16.7545 17.0237 16.364 17.4142L14.9142 18.864C14.5237 19.2545 13.8905 19.2545 13.5 18.864L12.9281 18.293C12.3466 18.7091 11.6949 19.031 11 19.243V20C11 20.5523 10.5523 21 10 21H8C7.44772 21 7 20.5523 7 20V19.243C6.30511 19.031 5.65248 18.7091 5.07097 18.293L4.5 18.864C4.10948 19.2545 3.47631 19.2545 3.08579 18.864L1.63604 17.4142C1.24551 17.0237 1.24551 16.3905 1.63604 16L2.20701 15.429C1.79088 14.8475 1.46904 14.1949 1.257 13.5H0.5C0.223858 13.5 0 13.2761 0 13V10C0 9.72386 0.223858 9.5 0.5 9.5H1.257C1.46904 8.80511 1.79088 8.15248 2.20701 7.57097L1.63604 7C1.24551 6.60948 1.24551 5.97631 1.63604 5.58579L3.08579 4.13604C3.47631 3.74551 4.10948 3.74551 4.5 4.13604L5.07097 4.70701C5.65248 4.29088 6.30511 3.96904 7 3.757V3C7 2.44772 7.44772 2 8 2H10Z" stroke="white" stroke-width="1.5"/>
+            </svg>
+        </button>
     </div>
     
 
@@ -59,17 +65,9 @@
         </div>
     </div>
     
-    <!-- Controls section with toggle button -->
+    <!-- Controls section -->
     <div class="controls-container">
-        <div class="controls-header">
-            <button id="controls-toggle" class="controls-toggle" title="Toggle controls visibility">
-                <span>Settings</span>
-                <svg class="icon toggle-arrow" viewBox="0 0 16 16">
-                    <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.8"/>
-                </svg>
-            </button>
-        </div>
-        <div class="controls show" id="controls-panel">
+        <div class="controls" id="controls-panel">
             <div class="control-group">
                 <div class="control-item">
                     <div class="control-label">📄 Report Format</div>
