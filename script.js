@@ -615,39 +615,34 @@ const loadFiles = async () => {
 
 const loadOriginalPrompts = async () => {
   try {
-    // Get the list of files in the prompts directory
-    const response = await fetch("prompts/");
-    const text = await response.text();
-
-    // Parse the directory listing to extract filenames
-    const fileMatches = text.match(/href="([^"]+\.txt)"/g);
-    if (fileMatches) {
-      const promptFiles = fileMatches.map((match) => {
-        const filename = match.match(/href="([^"]+)"/)[1];
-        return filename;
-      });
-
-      // Load each prompt file
-      for (const file of promptFiles) {
-        try {
-          state.originalPrompts[file] = await (await fetch(file)).text();
-          console.log(`Loaded prompt: ${file}`);
-        } catch (error) {
-          console.warn(`Could not load ${file}:`, error);
-        }
+    // Define known prompt files instead of trying to list the directory
+    const promptFiles = [
+      "Comparison_Questions.txt",
+      "Factual_Questions.txt",
+      "Web_Search_Analysis.txt",
+      "Top_Bottom_Questions.txt"
+    ];
+    
+    // Load each prompt file
+    for (const file of promptFiles) {
+      try {
+        state.originalPrompts[file] = await (await fetch(`prompts/${file}`)).text();
+        console.log(`Loaded prompt: ${file}`);
+      } catch (error) {
+        console.warn(`Could not load ${file}:`, error);
       }
-    }
+      }
   } catch (error) {
     console.warn("Could not fetch prompts directory listing:", error);
     // Fallback to known files if directory listing fails
     const fallbackFiles = [
-      "prompts/system_prompt_mmr.txt",
-      "prompts/system_prompt_mmr_data_only.txt",
+      "system_prompt_mmr.txt",
+      "system_prompt_mmr_data_only.txt",
     ];
 
     for (const file of fallbackFiles) {
       try {
-        state.originalPrompts[file] = await (await fetch(file)).text();
+        state.originalPrompts[file] = await (await fetch(`prompts/${file}`)).text();
         console.log(`Loaded fallback prompt: ${file}`);
       } catch (error) {
         console.warn(`Could not load fallback ${file}:`, error);
