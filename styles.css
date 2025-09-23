@@ -95,15 +95,39 @@ body {
 }
 
 /* ===== CONTROLS SECTION ===== */
+.controls-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 12px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.controls-header:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 .controls {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 24px;
     width: 100%;
-    margin-bottom: 8px;
     z-index: 10;
-    padding: 0 4px;
+    padding: 0 12px;
+    max-height: 0;
+    overflow: visible;
+    opacity: 0;
+    transition: opacity 0.3s ease, padding 0.3s ease;
+}
+
+.controls.show {
+    max-height: 100px;
+    opacity: 1;
+    padding: 10px 12px 15px;
+    margin-bottom: 0;
 }
 
 .control-group {
@@ -139,6 +163,7 @@ body {
     cursor: pointer;
     position: relative;
     transition: all 0.2s ease;
+    z-index: 100;
 }
 
 .control-select:hover {
@@ -151,20 +176,52 @@ body {
     cursor: not-allowed;
 }
 
+.controls-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.controls-toggle:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+.controls-toggle .icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+}
+
+.controls-toggle.active .toggle-arrow {
+    transform: rotate(180deg);
+}
+
 .dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(15px);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 9999;
     margin-top: 2px;
     display: none;
     animation: dropdownFadeIn 0.2s ease;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .dropdown-menu.show {
@@ -417,35 +474,48 @@ body {
     51%, 100% { opacity: 0; }
 }
 
-/* ===== BOTTOM SECTION ===== */
-.bottom-section {
+/* ===== SUGGESTIONS ===== */
+.suggestions {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto 12px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    gap: 12px;
     z-index: 500;
-    padding: 12px;
+    padding: 0;
+}
+
+/* ===== CONTROLS CONTAINER ===== */
+.controls-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 12px;
+    z-index: 500;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(15px);
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     border-top: 3px solid #7c70ff;
 }
 
 /* Reduce gap when chat is active */
-.main-content.chat-active ~ .bottom-section {
-    gap: 10px;
-    bottom: 12px;
-    padding: 12px 0;
+.main-content.chat-active ~ .controls-container {
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.main-content.chat-active ~ .suggestions {
+    margin-bottom: 8px;
 }
 
 /* Alternative: Body class approach for chat active state */
-body.chat-active .bottom-section {
-    gap: 10px;
-    bottom: 12px;
-    padding: 12px 0;
+body.chat-active .controls-container {
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+body.chat-active .suggestions {
+    margin-bottom: 8px;
 }
 
 /* ===== SUGGESTION CARDS (Welcome Screen) ===== */
@@ -572,7 +642,9 @@ body.chat-active .bottom-section {
     flex-direction: column;
     height: 93px;
     transition: all 0.2s ease;
-    margin-top: 10px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .input-area.loading {
@@ -890,10 +962,29 @@ body.chat-active .bottom-section {
 }
 
 @media (max-width: 768px) {
+    .controls-container {
+        margin-bottom: 8px;
+    }
+    
+    .controls-header {
+        padding: 8px 10px 0;
+    }
+    
+    .controls-toggle {
+        padding: 5px 10px;
+        font-size: 13px;
+    }
+    
     .controls {
         flex-direction: column;
         gap: 12px;
         align-items: center;
+        padding: 8px 10px;
+    }
+    
+    .controls.show {
+        padding: 8px 10px 12px;
+        max-height: 200px;
     }
     
     .control-group {

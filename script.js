@@ -1284,8 +1284,33 @@ const initializeEventListeners = () => {
     userQuestion: document.getElementById("user-question"),
     resetBtn: document.getElementById("reset-btn"),
     formatSelect: document.getElementById("format-select"),
-    languageSelect: document.getElementById("language-select")
+    languageSelect: document.getElementById("language-select"),
+    controlsToggle: document.getElementById("controls-toggle"),
+    controlsPanel: document.getElementById("controls-panel")
   };
+
+  // Get the controls header element
+  const controlsHeader = document.querySelector(".controls-header");
+  
+  // Controls toggle functionality - make entire header clickable
+  const toggleControls = () => {
+    elements.controlsPanel?.classList.toggle("show");
+    elements.controlsToggle?.classList.toggle("active");
+  };
+  
+  // Add click event to both the toggle button and the header div
+  elements.controlsToggle?.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent double triggering
+    toggleControls();
+  });
+  
+  // Make the entire header div clickable
+  controlsHeader?.addEventListener("click", toggleControls);
+  
+  // Initialize controls to be visible by default
+  if (elements.controlsPanel && !elements.controlsPanel.classList.contains("show")) {
+    elements.controlsPanel.classList.add("show");
+  }
 
   // Configuration button
   elements.configLlmBtn?.addEventListener("click", configureLLM);

@@ -43,26 +43,33 @@
         <div class="chat-area" id="chat-area"></div>
     </div>
     
-    <!-- Bottom section -->
-    <div class="bottom-section">
-        <!-- Suggestion cards -->
-        <div class="suggestions" id="suggestions">
-            <div class="suggestion-card" data-description="Rank the top 5 and bottom 5 districts by MMR">
-                <div class="suggestion-title">District MMR Ranking</div>
-                <div class="suggestion-description">Rank the top 5 and bottom 5 districts by MMR</div>
-            </div>
-            <div class="suggestion-card" data-description="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
-                <div class="suggestion-title">Regional Anemia Comparison</div>
-                <div class="suggestion-description">Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi</div>
-            </div>
-            <div class="suggestion-card" data-description="What are the latest maternal health policies and initiatives in India?">
-                <div class="suggestion-title">Current Health Policies</div>
-                <div class="suggestion-description">What are the latest maternal health policies and initiatives in India?</div>
-            </div>
+    <!-- Suggestion cards -->
+    <div class="suggestions" id="suggestions">
+        <div class="suggestion-card" data-description="Rank the top 5 and bottom 5 districts by MMR">
+            <div class="suggestion-title">District MMR Ranking</div>
+            <div class="suggestion-description">Rank the top 5 and bottom 5 districts by MMR</div>
         </div>
-        
-        <!-- Controls -->
-        <div class="controls">
+        <div class="suggestion-card" data-description="Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi">
+            <div class="suggestion-title">Regional Anemia Comparison</div>
+            <div class="suggestion-description">Compare anemia prevalence in Lucknow, Gorakhpur, and Jhansi</div>
+        </div>
+        <div class="suggestion-card" data-description="What are the latest maternal health policies and initiatives in India?">
+            <div class="suggestion-title">Current Health Policies</div>
+            <div class="suggestion-description">What are the latest maternal health policies and initiatives in India?</div>
+        </div>
+    </div>
+    
+    <!-- Controls section with toggle button -->
+    <div class="controls-container">
+        <div class="controls-header">
+            <button id="controls-toggle" class="controls-toggle" title="Toggle controls visibility">
+                <span>Settings</span>
+                <svg class="icon toggle-arrow" viewBox="0 0 16 16">
+                    <path d="M1.79688 6L2.64062 6.85938L7.64062 11.8594L8 12.2031L8.35938 11.8594L13.3594 6.85938L14.2031 6H1.79688ZM4.21875 7H11.7812L8 10.7812L4.21875 7Z" fill="currentColor" opacity="0.8"/>
+                </svg>
+            </button>
+        </div>
+        <div class="controls show" id="controls-panel">
             <div class="control-group">
                 <div class="control-item">
                     <div class="control-label">📄 Report Format</div>
@@ -101,27 +108,27 @@
                 </svg>
             </button>
         </div>
-        
-        <!-- Input area -->
-        <div class="input-area">
-            <textarea 
-                class="input-textarea" 
-                id="user-question"
-                placeholder="💬 Ask your health care data analysis question..."
-                disabled
-            ></textarea>
-            <div class="input-controls">
-                <button class="mic-btn" id="mic-btn" title="Click to speak">
-                    <svg class="icon" viewBox="0 0 22 22">
-                        <path d="M8.9375 2.75C8.18555 2.75 7.5625 3.37305 7.5625 4.125V12.375C7.5625 13.127 8.18555 13.75 8.9375 13.75H13.0625C13.8145 13.75 14.4375 13.127 14.4375 12.375V4.125C14.4375 3.37305 13.8145 2.75 13.0625 2.75H8.9375ZM8.9375 4.125H13.0625V12.375H8.9375V4.125ZM4.8125 9.625V12.375C4.8125 14.6443 6.66821 16.5 8.9375 16.5H10.3125V17.875H7.5625V19.25H14.4375V17.875H11.6875V16.5H13.0625C15.3318 16.5 17.1875 14.6443 17.1875 12.375V9.625H15.8125V12.375C15.8125 13.9004 14.5879 15.125 13.0625 15.125H8.9375C7.41211 15.125 6.1875 13.9004 6.1875 12.375V9.625H4.8125Z" fill="currentColor"/>
-                    </svg>
-                </button>
-                <button class="send-btn" id="send-btn" disabled>
-                    <svg class="icon icon-white" viewBox="0 0 20 20">
-                        <path d="M10 2.55859L9.55078 2.98828L4.23828 8.30078L5.13672 9.19922L9.375 4.96094V17.5H10.625V4.96094L14.8633 9.19922L15.7617 8.30078L10.4492 2.98828L10 2.55859Z" fill="white"/>
-                    </svg>
-                </button>
-            </div>
+    </div>
+    
+    <!-- Input area as a separate element -->
+    <div class="input-area">
+        <textarea 
+            class="input-textarea" 
+            id="user-question"
+            placeholder="💬 Ask your health care data analysis question..."
+            disabled
+        ></textarea>
+        <div class="input-controls">
+            <button class="mic-btn" id="mic-btn" title="Click to speak">
+                <svg class="icon" viewBox="0 0 22 22">
+                    <path d="M8.9375 2.75C8.18555 2.75 7.5625 3.37305 7.5625 4.125V12.375C7.5625 13.127 8.18555 13.75 8.9375 13.75H13.0625C13.8145 13.75 14.4375 13.127 14.4375 12.375V4.125C14.4375 3.37305 13.8145 2.75 13.0625 2.75H8.9375ZM8.9375 4.125H13.0625V12.375H8.9375V4.125ZM4.8125 9.625V12.375C4.8125 14.6443 6.66821 16.5 8.9375 16.5H10.3125V17.875H7.5625V19.25H14.4375V17.875H11.6875V16.5H13.0625C15.3318 16.5 17.1875 14.6443 17.1875 12.375V9.625H15.8125V12.375C15.8125 13.9004 14.5879 15.125 13.0625 15.125H8.9375C7.41211 15.125 6.1875 13.9004 6.1875 12.375V9.625H4.8125Z" fill="currentColor"/>
+                </svg>
+            </button>
+            <button class="send-btn" id="send-btn" disabled>
+                <svg class="icon icon-white" viewBox="0 0 20 20">
+                    <path d="M10 2.55859L9.55078 2.98828L4.23828 8.30078L5.13672 9.19922L9.375 4.96094V17.5H10.625V4.96094L14.8633 9.19922L15.7617 8.30078L10.4492 2.98828L10 2.55859Z" fill="white"/>
+                </svg>
+            </button>
         </div>
     </div>
 
