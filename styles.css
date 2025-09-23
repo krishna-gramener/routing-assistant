@@ -120,7 +120,53 @@ body {
 }
 
 /* ===== CONTROLS SECTION ===== */
+.controls-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 12px;
+    z-index: 500;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 12px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid #7c70ff;
+}
 
+.controls-toggle {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #7c70ff, #6e62e6);
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 501;
+    padding: 0;
+    transition: transform 0.3s ease;
+}
+
+.controls-toggle:hover {
+    transform: translateX(-50%) translateY(-2px);
+}
+
+.controls-toggle .toggle-arrow {
+    width: 16px;
+    height: 16px;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.controls-toggle.active .toggle-arrow {
+    transform: rotate(180deg);
+}
 
 .controls {
     display: flex;

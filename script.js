@@ -1289,17 +1289,17 @@ const initializeEventListeners = () => {
     controlsPanel: document.getElementById("controls-panel")
   };
 
-  // Get the settings button in the header
-  const settingsBtn = document.getElementById("settings-btn");
+  // Get the toggle arrow button
+  const controlsToggle = document.getElementById("controls-toggle");
   
   // Controls toggle functionality
   const toggleControls = () => {
     elements.controlsPanel?.classList.toggle("show");
-    settingsBtn?.classList.toggle("active");
+    controlsToggle?.classList.toggle("active");
   };
   
-  // Add click event to the settings button in the header
-  settingsBtn?.addEventListener("click", toggleControls);
+  // Add click event to the toggle arrow button
+  controlsToggle?.addEventListener("click", toggleControls);
   
   // Initialize controls to be hidden by default
   if (elements.controlsPanel && elements.controlsPanel.classList.contains("show")) {
