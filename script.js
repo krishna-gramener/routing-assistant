@@ -753,6 +753,13 @@ const processWithLLM = async (question, decision) => {
     reasoning: decision.reasoning
   });
 
+  // Get current format and language selections
+  const formatValue = document.getElementById('format-value').textContent;
+  const languageValue = document.getElementById('language-value').textContent;
+  
+  console.log("📝 Using format:", formatValue);
+  console.log("🌐 Using language:", languageValue);
+
   // Safety check: If using Web_Search_Analysis.txt but no files selected, add web-search
   if (decision.chosen_prompt.includes('Web_Search_Analysis.txt') && decision.chosen_files.length === 0) {
     console.log("⚠️ AUTO-CORRECTING: Adding web-search for Web_Search_Analysis prompt");
@@ -832,10 +839,32 @@ const processWithLLM = async (question, decision) => {
       "\nUse this context to provide more informed responses and avoid repeating information unless specifically asked to do so.\n";
   }
 
-  // Build context with prompts, files, and conversation history
+  // Build format instructions based on selected format
+  let formatInstructions = "";
+  switch(formatValue) {
+    case "Executive Summary":
+      formatInstructions = "Format your response as an executive summary with a clear overview, key findings, and concise conclusions.";
+      break;
+    case "E-mail":
+      formatInstructions = "Format your response as a professional email with a greeting, body paragraphs, and a closing signature.";
+      break;
+    case "Bullet Points":
+      formatInstructions = "Format your response as a series of organized bullet points with clear headings where appropriate.";
+      break;
+    default:
+      formatInstructions = "Format your response as an executive summary.";
+  }
+  
+  // Build language instructions
+  let languageInstructions = "";
+  if (languageValue !== "English") {
+    languageInstructions = `Respond in ${languageValue} language. Translate all content to ${languageValue}.`;
+  }
+  
+  // Build context with prompts, files, conversation history, format and language instructions
   const systemMessage = {
     role: "system",
-    content: `${promptContent}\n\n=== CONTEXT FILES ===\n${fileContents.join(
+    content: `${promptContent}\n\n=== RESPONSE FORMAT AND LANGUAGE ===\n${formatInstructions}\n${languageInstructions}\n\n=== CONTEXT FILES ===\n${fileContents.join(
       "\n\n"
     )}${conversationContext}`,
   };
